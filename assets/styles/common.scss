@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
+html {
+  font-family: 'Noto Sans KR', sans-serif;
+
+  --primary-color-dark: #4ca1d3;
+  --primary-color: #6ab3de;
+  --primary-color-light: #6ab3de;
+
+  --border-color: #eeeff0;
+
+  --text-color: #121212;
+  --text-color-light: #6e6e6e;
+  --text-color-lighter: #dddddd;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ===== Scrollbar CSS ===== */
+.pretty-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #1a8bcd #ffffff;
+  
+  /* Chrome, Edge, and Safari */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: #1a8bcd;
+    border-radius: 23px;
+    border: 2px solid #ffffff;
+  }
+}
+
+.content-wrapper {
+  width: 1400px;
+  margin: 30px auto;
+}
