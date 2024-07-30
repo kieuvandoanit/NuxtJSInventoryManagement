@@ -1,18 +1,13 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 export default defineNuxtConfig({
   ssr: false,
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
-  css: [
-    'assets/styles/normalize.css',
-    'assets/styles/common.scss',
-  ],
-  plugins: [
-    'plugins/firebase.client.ts'
-  ],
+  modules: ["@nuxtjs/tailwindcss"],
+  css: ["assets/styles/normalize.css", "assets/styles/common.scss"],
+  plugins: ["plugins/firebase.client.ts"],
   runtimeConfig: {
     public: {
       FB_API_KEY: process.env.FB_API_KEY,
@@ -21,7 +16,7 @@ export default defineNuxtConfig({
       FB_PROJECT_ID: process.env.FB_PROJECT_ID,
       FB_STORAGE_BUCKET: process.env.FB_STORAGE_BUCKET,
       FB_MESSAGING_SENDER_ID: process.env.FB_MESSAGING_SENDER_ID,
-      FB_APP_ID: process.env.FB_APP_ID
-    }
-  }
-})
+      FB_APP_ID: process.env.FB_APP_ID,
+    },
+  },
+});
