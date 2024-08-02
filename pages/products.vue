@@ -29,7 +29,9 @@
               <th class="p-3 text-left font-semibold text-gray-600">
                 Location
               </th>
+              <th class="p-3 text-left font-semibold text-gray-600">Price</th>
               <th class="p-3 text-left font-semibold text-gray-600">Badge</th>
+
               <th class="p-3 text-left font-semibold text-gray-600">Status</th>
               <th class="p-3 text-left font-semibold text-gray-600">
                 Created at
@@ -55,6 +57,7 @@
               <td class="p-3">{{ product.name }}</td>
               <td class="p-3">{{ product.quantity }}</td>
               <td class="p-3">{{ product.shelves.join(",") }}</td>
+              <td class="p-3">{{ product.price }}</td>
               <td class="p-3">{{ product.sku }}</td>
               <td class="p-3 text-green-500">
                 {{ product.status === 0 ? "Available" : "Out of Stock" }}
