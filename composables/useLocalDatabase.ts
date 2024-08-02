@@ -31,7 +31,6 @@ export const useLocalDatabase = () => {
   };
   const getProductById = (id: string): Product | undefined =>
     products.value[id];
-  console.log(getProductById);
   return {
     loadDatabase,
     products,

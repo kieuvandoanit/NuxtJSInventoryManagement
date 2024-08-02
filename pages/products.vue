@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="container mx-auto p-4">
-      <h1 class="text-3xl font-bold mb-4">Màn hình báo cáo</h1>
       <div class="mb-4 flex justify-between items-center">
         <h2 class="text-2xl font-semibold">Stock Check Report</h2>
         <input
@@ -31,7 +30,6 @@
               </th>
               <th class="p-3 text-left font-semibold text-gray-600">Price</th>
               <th class="p-3 text-left font-semibold text-gray-600">Badge</th>
-
               <th class="p-3 text-left font-semibold text-gray-600">Status</th>
               <th class="p-3 text-left font-semibold text-gray-600">
                 Created at
@@ -42,10 +40,10 @@
             <tr
               v-for="(product, id) in products"
               :key="id"
-              class="border-b hover:bg-gray-50"
+              @click="goToProductDetail(id)"
+              class="cursor-pointer hover:bg-gray-200"
             >
-              <td class="p-3">4/7/2024</td>
-              <!-- Hiển thị ID sản phẩm ở đây -->
+              <td class="p-3">{{ product.sku }}</td>
               <td class="p-3">{{ id }}</td>
               <td class="p-3">
                 <img
@@ -54,7 +52,7 @@
                   class="w-32 h-32 object-cover"
                 />
               </td>
-              <td class="p-3">{{ product.name }}</td>
+              <td class="p-3 max-w-[200px] break-words">{{ product.name }}</td>
               <td class="p-3">{{ product.quantity }}</td>
               <td class="p-3">{{ product.shelves.join(",") }}</td>
               <td class="p-3">{{ product.price }}</td>
@@ -71,44 +69,23 @@
   </div>
 </template>
 
-<style scoped>
-/* Điều chỉnh chiều dài của cột "Item name" và cho phép xuống dòng */
-table {
-  width: 100%; /* Đặt chiều rộng của bảng */
-}
-
-td {
-  max-width: 200px; /* Đặt chiều rộng tối đa cho cột */
-  overflow-wrap: break-word; /* Cho phép văn bản xuống dòng */
-}
-
-img {
-  max-width: 100px; /* Điều chỉnh kích thước tối đa của hình ảnh */
-  max-height: 100px;
-  object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng */
-}
-</style>
-
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useLocalDatabase } from "~/composables/useLocalDatabase";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const { loadDatabase, products, getProductById } = useLocalDatabase();
 
 const product = ref<Product | null>(null);
-const productId = "PROD_0001"; // Replace with the product ID you want to display
-
-onMounted(async () => {
-  await loadDatabase();
-  product.value = getProductById(productId);
-});
+const productId = "PROD_0001";
 
 onMounted(async () => {
   await loadDatabase();
   product.value = getProductById(productId) || null;
 });
+console.log(product.value);
+const goToProductDetail = (id: string) => {
+  router.push(`/products/${id}`);
+};
 </script>
-
-<style scoped>
-/* Thêm bất kỳ kiểu tùy chỉnh nào nếu cần */
-</style>
