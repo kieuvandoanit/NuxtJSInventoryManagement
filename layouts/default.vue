@@ -1,16 +1,16 @@
 <template>
   <div class="wrapper">
-    <LayoutsHeader/>
+    <LayoutsHeader />
     <div class="page_content min-h-80">
       <slot />
     </div>
-    <LayoutsFooter/>
+    <LayoutsFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 // import type { Note } from '@/types/note.type';
-import useFetchApi from '~/composables/useFetchApi';
+import useFetchApi from "~/composables/useFetchApi";
 
 // const { signal } = useReloadSignal()
 
@@ -28,5 +28,4 @@ const noteId = 1;
 // const notes = ref<Note[]>(data.value.data);
 
 // watch
-
 </script>
