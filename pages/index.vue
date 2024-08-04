@@ -1,13 +1,11 @@
-<script setup lang="ts">
-// import { PlusIcon } from '@heroicons/vue/24/outline';
-</script>
-
 <template>
   <div class="default-content">
-    <h4 class="bg-green-700">This is content of homepage</h4>
+    <h4 class="bg-green-700">HOME PAGE</h4>
   </div>
 </template>
 
-<style lang="scss" scoped>
-
-</style>
+<script setup lang="ts">
+  onMounted(async () => {
+    await navigateTo('/employee');
+  });
+</script>

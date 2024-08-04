@@ -10,14 +10,17 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/firebase": "^8.2.2",
+    "@nuxtjs/firebase": "^0.0.0",
     "dotenv": "^16.4.5",
     "firebase": "^10.12.4",
     "nuxt": "^3.12.3",
-    "vue": "latest"
+    "uuid": "^10.0.0",
+    "vue": "^3.4.35",
+    "vue-toast-notification": "^3.1.2"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
+    "@types/uuid": "^10.0.0",
     "sass": "^1.77.8"
   }
 }

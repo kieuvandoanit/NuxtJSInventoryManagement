@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
-    <LayoutsHeader />
-    <div class="page_content min-h-80">
+    <LayoutsHeader/>
+    <div class="page_content">
       <slot />
     </div>
     <LayoutsFooter />
@@ -9,23 +9,12 @@
 </template>
 
 <script setup lang="ts">
-// import type { Note } from '@/types/note.type';
-import useFetchApi from "~/composables/useFetchApi";
 
-// const { signal } = useReloadSignal()
-
-const noteId = 1;
-
-// const { data, refresh } = await useFetchApi<Note[]>('/api/v1/notes');
-
-// if (!data.value) {
-//   throw createError({
-//     status: 500,
-//     statusText: 'Something went wrong!'
-//   });
-// }
-
-// const notes = ref<Note[]>(data.value.data);
-
-// watch
 </script>
+<style scoped lang="scss">
+.page_content {
+  min-height: calc(100vh - 205px);
+  width: 1400px;
+  margin: 35px auto;
+}
+</style>
