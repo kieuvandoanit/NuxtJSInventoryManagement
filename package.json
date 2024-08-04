@@ -14,10 +14,13 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.12.4",
     "nuxt": "^3.12.3",
-    "vue": "latest"
+    "uuid": "^10.0.0",
+    "vue": "latest",
+    "vue-toast-notification": "^3.1.2"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
+    "@types/uuid": "^10.0.0",
     "sass": "^1.77.8"
   }
 }

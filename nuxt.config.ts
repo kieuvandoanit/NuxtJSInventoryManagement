@@ -5,9 +5,15 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss"],
-  css: ["assets/styles/normalize.css", "assets/styles/common.scss"],
-  plugins: ["plugins/firebase.client.ts"],
+  modules: ['@nuxtjs/tailwindcss'],
+  css: [
+    'assets/styles/normalize.css',
+    'assets/styles/common.scss',
+  ],
+  plugins: [
+    { src: 'plugins/firebase.client.ts', mode: 'client' },
+    { src: 'plugins/toast.client.ts', mode: 'client' }
+  ],
   runtimeConfig: {
     public: {
       FB_API_KEY: process.env.FB_API_KEY,
