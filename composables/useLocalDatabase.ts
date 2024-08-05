@@ -19,18 +19,26 @@ interface Database {
 
 export const useLocalDatabase = () => {
   const products: Ref<{ [key: string]: Product }> = ref({});
-
   const loadDatabase = async () => {
     try {
       const response = await fetch("/api/database");
       const data = await response.json();
-      products.value = data.products || [];
+      // Kiểm tra cấu trúc dữ liệu
+      console.log("Raw data from API:", data);
+      products.value = data.products || {};
+      console.log("Loaded products:", products.value);
     } catch (error) {
       console.error("Error loading database:", error);
     }
   };
-  const getProductById = (id: string): Product | undefined =>
-    products.value[id];
+  const getProductById = (id: string) => {
+    return products.value[id] || Object.values(products.value).find((product) => product.sku === id) || null;
+  };
+  
+  
+  
+  
+  
   return {
     loadDatabase,
     products,
