@@ -9,26 +9,57 @@
             alt="Product Image"
             class="w-64 h-64 object-cover rounded-lg shadow-md"
           />
-          <p v-if="successMessage" class="text-green-500 font-semibold mt-4">{{ successMessage }}</p>
+          <p v-if="successMessage" class="text-green-500 font-semibold mt-4">
+            {{ successMessage }}
+          </p>
 
-          <h2 class="text-3xl font-semibold mt-4 text-gray-900">{{ product.name }}</h2>
+          <h2 class="text-3xl font-semibold mt-4 text-gray-900">
+            {{ product.name }}
+          </h2>
         </div>
         <div v-if="!editing" class="space-y-4">
-          <p><strong class="font-medium text-gray-700">Product ID:</strong> {{ route.params.id }}</p>
-          <p><strong class="font-medium text-gray-700">Description:</strong> {{ product.description }}</p>
-          <p><strong class="font-medium text-gray-700">Price:</strong> ${{ product.price.toLocaleString() }}</p>
-          <p><strong class="font-medium text-gray-700">Quantity:</strong> {{ product.quantity }}</p>
-          <p><strong class="font-medium text-gray-700">Location:</strong> {{ product.shelves.join(", ") }}</p>
-          <p><strong class="font-medium text-gray-700">Status:</strong> {{ product.status === 0 ? "Available" : "Out of Stock" }}</p>
-          <p><strong class="font-medium text-gray-700">Created At:</strong> {{ new Date(product.createdAt).toLocaleDateString() }}</p>
-          <button @click="enableEditing" class="inline-block bg-green-500 text-white py-2 px-4 rounded-lg text-center hover:bg-green-600 transition">
+          <p>
+            <strong class="font-medium text-gray-700">Product ID:</strong>
+            {{ route.params.id }}
+          </p>
+          <p>
+            <strong class="font-medium text-gray-700">Description:</strong>
+            {{ product.description }}
+          </p>
+          <p>
+            <strong class="font-medium text-gray-700">Price:</strong> ${{
+              product.price.toLocaleString()
+            }}
+          </p>
+          <p>
+            <strong class="font-medium text-gray-700">Quantity:</strong>
+            {{ product.quantity }}
+          </p>
+          <p>
+            <strong class="font-medium text-gray-700">Location:</strong>
+            {{ product.shelves.join(", ") }}
+          </p>
+          <p>
+            <strong class="font-medium text-gray-700">Status:</strong>
+            {{ product.status === 0 ? "Available" : "Out of Stock" }}
+          </p>
+          <p>
+            <strong class="font-medium text-gray-700">Created At:</strong>
+            {{ new Date(product.createdAt).toLocaleDateString() }}
+          </p>
+          <button
+            @click="enableEditing"
+            class="inline-block bg-green-500 text-white py-2 px-4 rounded-lg text-center hover:bg-green-600 transition"
+          >
             Edit
           </button>
         </div>
         <div v-else class="space-y-4">
           <form @submit.prevent="saveChanges">
             <div class="mb-4">
-              <label for="description" class="block text-gray-700">Description:</label>
+              <label for="description" class="block text-gray-700"
+                >Description:</label
+              >
               <textarea
                 id="description"
                 v-model="product.description"
@@ -46,7 +77,9 @@
               />
             </div>
             <div class="mb-4">
-              <label for="quantity" class="block text-gray-700">Quantity:</label>
+              <label for="quantity" class="block text-gray-700"
+                >Quantity:</label
+              >
               <input
                 id="quantity"
                 type="number"
@@ -63,10 +96,17 @@
                 class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
-            <button type="submit" class="inline-block bg-blue-500 text-white py-2 px-4 rounded-lg text-center hover:bg-blue-600 transition">
+            <button
+              type="submit"
+              class="inline-block bg-blue-500 text-white py-2 px-4 rounded-lg text-center hover:bg-blue-600 transition"
+            >
               Save Changes
             </button>
-            <button @click="disableEditing" type="button" class="inline-block bg-gray-500 text-white py-2 px-4 rounded-lg text-center hover:bg-gray-600 transition ml-4">
+            <button
+              @click="disableEditing"
+              type="button"
+              class="inline-block bg-gray-500 text-white py-2 px-4 rounded-lg text-center hover:bg-gray-600 transition ml-4"
+            >
               Cancel
             </button>
           </form>
@@ -84,9 +124,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useLocalDatabase } from '~/composables/useLocalDatabase';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useLocalDatabase } from "~/composables/useLocalDatabase";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 const { getProductById, loadDatabase } = useLocalDatabase();
@@ -97,22 +137,21 @@ const originalProduct = ref<Product | null>(null);
 
 onMounted(async () => {
   try {
-    // Load the database
     await loadDatabase();
-    
-    // Retrieve the product ID from route
+
+    // lay ID từ URL
     const productId = route.params.id as string;
-    console.log('Product ID from route:', productId);
-    
-    // Fetch the product data
+    console.log("Product ID from route:", productId);
+
+    // in thong tin product by ID
     const fetchedProduct = getProductById(productId);
-    console.log('Fetched Product:', fetchedProduct);
-    
+    console.log("Fetched Product:", fetchedProduct);
+
     // Set the product data
     product.value = fetchedProduct;
     originalProduct.value = JSON.parse(JSON.stringify(fetchedProduct)); // Create a deep copy
   } catch (error) {
-    console.error('Error loading product:', error);
+    console.error("Error loading product:", error);
   }
 });
 
@@ -128,22 +167,21 @@ const saveChanges = async () => {
   if (product.value) {
     try {
       // Check if product details have changed
-      const hasChanged = JSON.stringify(product.value) !== JSON.stringify(originalProduct.value);
+      const hasChanged =
+        JSON.stringify(product.value) !== JSON.stringify(originalProduct.value);
 
       if (hasChanged) {
-        // Simulate a successful update operation
-        console.log('Save Changes button clicked.');
-        console.log('Updated Product:', product.value);
-        successMessage.value = 'Product details updated successfully!';
-        
+        console.log("Save Changes button clicked.");
+        console.log("Updated Product:", product.value);
+        successMessage.value = "Product details updated successfully!";
+
         // Hide the success message after 5 seconds
         setTimeout(() => {
           successMessage.value = null;
         }, 5000);
       } else {
-        successMessage.value = 'No changes detected.';
-        
-        // Hide the message after 5 seconds
+        successMessage.value = "No changes detected.";
+
         setTimeout(() => {
           successMessage.value = null;
         }, 5000);
@@ -151,10 +189,8 @@ const saveChanges = async () => {
 
       disableEditing();
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error("Error updating product:", error);
     }
   }
 };
 </script>
-
-

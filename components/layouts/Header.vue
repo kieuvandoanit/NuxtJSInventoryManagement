@@ -37,13 +37,13 @@ import { NuxtLink } from '#build/components';
         <NuxtLink to="/employee" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Employees
         </NuxtLink>
-        <NuxtLink to="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        <NuxtLink to="/category" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Category
         </NuxtLink>
-        <NuxtLink to="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        <NuxtLink to="/shelves" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Shelves
         </NuxtLink>
-        <NuxtLink to="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        <NuxtLink to="/products/products" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Products
         </NuxtLink>
         <NuxtLink to="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
