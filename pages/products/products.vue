@@ -70,6 +70,8 @@
               >
                 {{ product.status === 0 ? "Available" : "Out of Stock" }}
               </td>
+              <td class="p-3">{{ product.createdAt }}</td>
+
             </tr>
           </template>
         </tbody>
@@ -92,7 +94,7 @@ import type Product from "~/interfaces/Product.interface";
 
 const { getItemsForPage } = useFirebaseDatabase();
 
-const products = ref<Record<string, Product>>({});
+const products = ref<Product[]>([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const currentPage = ref(1);
@@ -109,10 +111,8 @@ const loadProducts = async () => {
       lastKey.value
     );
 
-    // Cập nhật products object
-    result.items.forEach((item) => {
-      products.value[item.id] = item; // Sử dụng 'id' nếu bạn đã thêm 'id' vào dữ liệu
-    });
+    // set list product
+    products.value = result.items;
 
     lastKey.value = result.lastKey as string | null;
     hasMore.value = result.items.length === pageLimit;
