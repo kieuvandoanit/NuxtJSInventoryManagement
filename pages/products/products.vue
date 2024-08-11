@@ -42,7 +42,7 @@
           >
             <tr class="border-b border-gray-200 hover:bg-gray-50">
               <td class="p-3">{{ product.sku }}</td>
-              <td class="p-3">{{ product.productId }}</td>
+              <td class="p-3">{{ product.id }}</td>
               <td class="p-3">
                 <img
                   :src="product.image"
@@ -52,7 +52,7 @@
               </td>
               <td class="p-3 max-w-[200px] break-words">
                 <NuxtLink
-                  :to="`/products/${product.productId}`"
+                  :to="`/products/${product.id}`"
                   class="text-blue-500 hover:underline"
                 >
                   {{ product.name }}
@@ -71,7 +71,6 @@
                 {{ product.status === 0 ? "Available" : "Out of Stock" }}
               </td>
               <td class="p-3">{{ product.createdAt }}</td>
-
             </tr>
           </template>
         </tbody>
@@ -86,7 +85,6 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
@@ -98,27 +96,30 @@ const products = ref<Product[]>([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const currentPage = ref(1);
-const lastKey = ref<string | null>(null);
-const pageLimit = 5; // Số lượng sản phẩm trên mỗi trang
 
-const loadProducts = async () => {
+const pageKeys = ref<(string | number | null)[]>([null]);
+const pageLimit = 5;
+
+const loadProducts = async (isNextPage: boolean = true) => {
   loading.value = true;
   try {
+    const lastKey = pageKeys.value[currentPage.value - 1] ?? null;
     const result = await getItemsForPage<Product>(
       "products",
       "createdAt",
       pageLimit,
-      lastKey.value
+      lastKey
     );
-
-    // set list product
+    console.log("Fetched result:", result); // Đầu ra debug
     products.value = result.items;
+    if (isNextPage) {
+      const nextLastKey: string | number | null = result.lastKey ?? null;
+      pageKeys.value[currentPage.value] = nextLastKey;
+    }
 
-    lastKey.value = result.lastKey as string | null;
     hasMore.value = result.items.length === pageLimit;
 
-    // Log sản phẩm để kiểm tra
-    console.log("Products loaded:", products.value);
+    console.log("Products loaded:", products.value); // Đầu ra debug
   } catch (error) {
     console.error("Error loading products:", error);
   } finally {
@@ -129,16 +130,14 @@ const loadProducts = async () => {
 const handleNextPage = async () => {
   if (hasMore.value && !loading.value) {
     currentPage.value++;
-    await loadProducts();
+    await loadProducts(true);
   }
 };
 
 const handlePreviousPage = async () => {
   if (currentPage.value > 1 && !loading.value) {
     currentPage.value--;
-    lastKey.value = null; // Reset lastKey to load from the beginning
-    products.value = {}; // Clear current products
-    await loadProducts();
+    await loadProducts(false);
   }
 };
 

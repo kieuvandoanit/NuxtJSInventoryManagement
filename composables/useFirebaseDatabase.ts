@@ -10,8 +10,10 @@ import {
   orderByChild,
   startAfter,
   limitToFirst,
+  equalTo,
   type DatabaseReference,
 } from "firebase/database";
+import type Product from "~/interfaces/Product.interface";
 
 interface PaginatedResult<T> {
   items: T[];
@@ -29,7 +31,7 @@ export const useFirebaseDatabase = () => {
         result = true;
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error in create function:", error);
         result = false;
       });
 
@@ -147,6 +149,50 @@ export const useFirebaseDatabase = () => {
     return remove(dataRef);
   };
 
+  // const searchItems = async <T>(
+  //   path: string,
+  //   searchField: keyof T,
+  //   searchValue: string | number
+  // ): Promise<T[]> => {
+  //   const dbRef = ref($firebaseDB, path);
+  //   const queryDb = query(
+  //     dbRef,
+  //     orderByChild(searchField as string),
+  //     equalTo(searchValue)
+  //   );
+
+  //   try {
+  //     const snapshot = await get(queryDb);
+  //     if (snapshot.exists()) {
+  //       const data = snapshot.val();
+  //       return Object.keys(data).map((key) => ({ id: key, ...data[key] }));
+  //     } else {
+  //       return [];
+  //     }
+  //   } catch (error) {
+  //     console.error("Error searching data:", error);
+  //     throw error;
+  //   }
+  // };
+  const getProductById = async (productId: string): Promise<Product | null> => {
+    try {
+      const dbRef: DatabaseReference = ref(
+        $firebaseDB,
+        `products/${productId}`
+      );
+      const snapshot = await get(dbRef);
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No product found with ID:", productId);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return null;
+    }
+  };
+
   return {
     create,
     getAndListen,
@@ -154,5 +200,7 @@ export const useFirebaseDatabase = () => {
     getOnce,
     getOnceWithObserver,
     updateData,
+    deleteData,
+    getProductById,
   };
 };
