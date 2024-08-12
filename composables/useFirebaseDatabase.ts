@@ -23,7 +23,7 @@ interface PaginatedResult<T> {
 export const useFirebaseDatabase = () => {
   const { $firebaseDB }: any = useNuxtApp();
 
-  const create = async (path: string, data: object): Promise<boolean> => {
+  const create = async (path: string, newCategoryId: string, data: object): Promise<boolean> => {
     let result = false;
     const dataRef: DatabaseReference = ref($firebaseDB, path);
     await set(dataRef, data)
