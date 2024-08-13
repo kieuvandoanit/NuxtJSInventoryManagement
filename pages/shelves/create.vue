@@ -66,7 +66,9 @@
 import { ref } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Shelves from "~/interfaces/Shelves.interface";
-const { create, getItemsForPage } = useFirebaseDatabase();
+
+// Khởi tạo đối tượng shelve với các giá trị mặc định
+const { create } = useFirebaseDatabase();
 const shelve = ref<Shelves>({
   shelveId: "",
   name: "",
@@ -75,24 +77,48 @@ const shelve = ref<Shelves>({
   status: 0,
   createdAt: new Date().toISOString(),
 });
+
 const handleSubmit = async () => {
   try {
-    // Tạo một shelveId mới (có thể sử dụng thời gian hiện tại hoặc số ngẫu nhiên)
+    // Tạo một shelveId mới
     const newShelveId = `SHEL_${Date.now()}`;
-
-    // Gán shelveId mới cho shelve
     shelve.value.shelveId = newShelveId;
 
+    // Chuẩn hóa dữ liệu để không chứa giá trị undefined
+    const preparedData: Partial<Shelves> = { ...shelve.value };
+    Object.keys(preparedData).forEach((key) => {
+      if (preparedData[key as keyof Shelves] === undefined) {
+        // Nếu kiểu dữ liệu của thuộc tính không cho phép null,
+        // có thể gán giá trị mặc định hoặc bỏ qua
+        preparedData[key as keyof Shelves] = shelve.value[
+          key as keyof Shelves
+        ] as Shelves[keyof Shelves];
+      }
+    });
+
     // Tạo shelve trong cơ sở dữ liệu
-    const createResult = await create(`shelves/${newShelveId}`, shelve.value);
+    const createResult = await create(
+      `shelves/${newShelveId}`,
+      newShelveId,
+      preparedData
+    );
     if (createResult) {
       alert("Shelve created successfully!");
-      // Chuyển hướng hoặc làm mới biểu mẫu
+      // Xóa dữ liệu sau khi tạo thành công (tùy chọn)
+      shelve.value = {
+        shelveId: "",
+        name: "",
+        description: "",
+        location: "",
+        status: 0,
+        createdAt: new Date().toISOString(),
+      };
     } else {
       alert("Failed to create shelve.");
     }
   } catch (error) {
     console.error("Error creating shelve:", error);
+    alert("An error occurred while creating the shelve.");
   }
 };
 </script>

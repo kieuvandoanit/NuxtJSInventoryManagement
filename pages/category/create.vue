@@ -74,16 +74,27 @@ const handleSubmit = async () => {
 // Function to generate the new category ID
 const generateCategoryId = async (): Promise<string> => {
   const lastCategory = await getLastCategory();
-  const lastCategoryId = lastCategory ? lastCategory.categoryId : "CATE_0000";
+  const lastCategoryId = lastCategory?.categoryId ?? "CATE_0000";
+
   const nextCategoryId = `CATE_${String(
     parseInt(lastCategoryId.split("_")[1]) + 1
   ).padStart(4, "0")}`;
+
   return nextCategoryId;
 };
 
 // Function to get the last created category (for ID generation)
 const getLastCategory = async (): Promise<Category | null> => {
-  const result = await getItemsForPage<Category>("categories", "categoryId", 1);
-  return result.items.length > 0 ? result.items[0] : null;
+  try {
+    const result = await getItemsForPage<Category>(
+      "categories",
+      "categoryId",
+      1
+    );
+    return result.items.length > 0 ? result.items[0] : null;
+  } catch (error) {
+    console.error("Error fetching last category:", error);
+    return null;
+  }
 };
 </script>
