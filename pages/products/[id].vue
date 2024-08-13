@@ -17,6 +17,7 @@
             {{ product.name }}
           </h2>
         </div>
+
         <div v-if="!editing" class="space-y-4">
           <p>
             <strong class="font-medium text-gray-700">Product ID:</strong>
@@ -57,6 +58,7 @@
             Edit
           </button>
         </div>
+
         <div v-else class="space-y-4">
           <form @submit.prevent="saveChanges">
             <div class="mb-4">
@@ -114,6 +116,11 @@
             </button>
           </form>
         </div>
+        <p v-if="product.updatedAt">
+          <strong class="font-medium text-gray-700">Updated At:</strong>
+          {{ new Date(product.updatedAt).toLocaleString() }}
+        </p>
+
         <NuxtLink
           to="/products/products"
           class="inline-block bg-blue-500 text-white py-2 px-4 rounded-lg text-center hover:bg-blue-600 transition"
@@ -121,6 +128,7 @@
           Back to Products
         </NuxtLink>
       </div>
+
       <p v-else class="text-center text-gray-500">Loading product...</p>
     </div>
   </div>
@@ -133,7 +141,7 @@ import { useRoute } from "vue-router";
 import type Product from "~/interfaces/Product.interface";
 
 const route = useRoute();
-const { getOnce, updateData, getProductById } = useFirebaseDatabase();
+const { getProductById, updateData } = useFirebaseDatabase();
 const product = ref<Product | null>(null);
 const editing = ref(false);
 const successMessage = ref<string | null>(null);
@@ -141,15 +149,12 @@ const originalProduct = ref<Product | null>(null);
 
 onMounted(async () => {
   try {
-    // Ensure route.params.id is a string
     const productId = String(route.params.id);
-
-    // Fetch product by ID
     const fetchedProduct = await getProductById(productId);
-    console.log(fetchedProduct);
+
     if (fetchedProduct) {
       product.value = fetchedProduct;
-      originalProduct.value = JSON.parse(JSON.stringify(fetchedProduct)); // Create a deep copy
+      originalProduct.value = JSON.parse(JSON.stringify(fetchedProduct));
     } else {
       console.error("Product not found.");
     }
@@ -164,6 +169,7 @@ const enableEditing = () => {
 
 const disableEditing = () => {
   editing.value = false;
+  product.value = JSON.parse(JSON.stringify(originalProduct.value));
 };
 
 const saveChanges = async () => {
@@ -174,6 +180,8 @@ const saveChanges = async () => {
 
       if (hasChanged) {
         const productId = String(route.params.id);
+        product.value.updatedAt = new Date().toISOString();
+
         const updateSuccess = await updateData(
           `products/${productId}`,
           product.value
@@ -181,7 +189,7 @@ const saveChanges = async () => {
 
         if (updateSuccess) {
           successMessage.value = "Product details updated successfully!";
-          originalProduct.value = JSON.parse(JSON.stringify(product.value)); // Update original data
+          originalProduct.value = JSON.parse(JSON.stringify(product.value));
         } else {
           successMessage.value = "Failed to update product details.";
         }
