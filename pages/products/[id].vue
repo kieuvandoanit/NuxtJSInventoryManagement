@@ -128,7 +128,6 @@
           Back to Products
         </NuxtLink>
       </div>
-
       <p v-else class="text-center text-gray-500">Loading product...</p>
     </div>
   </div>

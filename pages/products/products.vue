@@ -71,6 +71,14 @@
                 {{ product.status === 0 ? "Available" : "Out of Stock" }}
               </td>
               <td class="p-3">{{ product.createdAt }}</td>
+              <td class="p-3">
+                <button
+                  @click="confirmDelete(product.id)"
+                  class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           </template>
         </tbody>
@@ -89,8 +97,9 @@
 import { ref, onMounted } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Product from "~/interfaces/Product.interface";
+import Id from "./[id].vue";
 
-const { getItemsForPage } = useFirebaseDatabase();
+const { getItemsForPage, deleteData } = useFirebaseDatabase();
 
 const products = ref<Product[]>([]);
 const loading = ref(false);
@@ -126,7 +135,22 @@ const loadProducts = async (isNextPage: boolean = true) => {
     loading.value = false;
   }
 };
+const confirmDelete = async (productId: string) => {
+  const isConfirmed = confirm("Are you sure you want to delete this product?");
+  if (isConfirmed) {
+    try {
+      await deleteData(`products/${productId}`);
 
+      if (deleteData) {
+        confirm("Product with: " + `products/${productId}` + "deleted success");
+      }
+      // Reload products after deletion
+      await loadProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  }
+};
 const handleNextPage = async () => {
   if (hasMore.value && !loading.value) {
     currentPage.value++;
@@ -140,6 +164,10 @@ const handlePreviousPage = async () => {
     await loadProducts(false);
   }
 };
+
+onMounted(async () => {
+  await loadProducts();
+});
 
 onMounted(async () => {
   await loadProducts();
