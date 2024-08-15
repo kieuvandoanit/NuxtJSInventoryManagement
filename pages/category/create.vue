@@ -47,7 +47,7 @@ import { ref } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Category from "~/interfaces/Category.interface";
 
-const { create } = useFirebaseDatabase();
+const { create, getItemsForPage } = useFirebaseDatabase();
 
 const category = ref<Category>({
   categoryId: "", // This will be generated automatically
@@ -59,42 +59,40 @@ const category = ref<Category>({
 const handleSubmit = async () => {
   try {
     // Generate a new category ID
-    const newCategoryId = await generateCategoryId();
+    const newCategoryId = await generateUniqueCategoryId();
     category.value.categoryId = newCategoryId;
 
     // Save the category to Firebase
-    await create("categories", newCategoryId, category.value);
-    alert("Category created successfully!");
+    const success = await create(`categories/${newCategoryId}`, category.value);
+    if (success) {
+      alert("Category created successfully!");
+      category.value = { categoryId: "", name: "", description: "", status: 0 }; // Reset form
+    } else {
+      alert("Error creating category.");
+    }
   } catch (error) {
     console.error("Error creating category:", error);
     alert("Error creating category.");
   }
 };
 
-// Function to generate the new category ID
-const generateCategoryId = async (): Promise<string> => {
-  const lastCategory = await getLastCategory();
-  const lastCategoryId = lastCategory?.categoryId ?? "CATE_0000";
+// Function to generate a unique category ID
+const generateUniqueCategoryId = async (): Promise<string> => {
+  const { items } = await getItemsForPage<Category>(
+    "categories",
+    "categoryId",
+    100 // Retrieve a reasonable number of categories to check for uniqueness
+  );
 
-  const nextCategoryId = `CATE_${String(
-    parseInt(lastCategoryId.split("_")[1]) + 1
-  ).padStart(4, "0")}`;
+  // Generate a new ID based on current timestamp
+  let newCategoryId = `CATE_${Date.now()}`;
 
-  return nextCategoryId;
-};
-
-// Function to get the last created category (for ID generation)
-const getLastCategory = async (): Promise<Category | null> => {
-  try {
-    const result = await getItemsForPage<Category>(
-      "categories",
-      "categoryId",
-      1
-    );
-    return result.items.length > 0 ? result.items[0] : null;
-  } catch (error) {
-    console.error("Error fetching last category:", error);
-    return null;
+  // Check for uniqueness
+  const ids = items.map((item) => item.categoryId);
+  while (ids.includes(newCategoryId)) {
+    newCategoryId = `CATE_${Date.now()}`;
   }
+
+  return newCategoryId;
 };
 </script>

@@ -29,6 +29,11 @@
       "name": "Thời trang nữ",
       "description": "Thời trang nữ",
       "status": 0
+    },
+    "CATE_0007": {
+      "name": "Thời trang Nam",
+      "description": "Thời trang Nam",
+      "status": 0
     }
   },
   "products": {

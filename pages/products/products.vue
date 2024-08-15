@@ -168,8 +168,4 @@ const handlePreviousPage = async () => {
 onMounted(async () => {
   await loadProducts();
 });
-
-onMounted(async () => {
-  await loadProducts();
-});
 </script>

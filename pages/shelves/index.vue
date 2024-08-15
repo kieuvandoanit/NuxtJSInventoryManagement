@@ -40,12 +40,6 @@
         </p>
         <!-- Edit and Delete Buttons -->
         <div class="flex justify-end mt-4">
-          <NuxtLink
-            :to="`/shelves/edit/${shelf.id}`"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-          >
-            Edit
-          </NuxtLink>
           <button
             @click="handleDelete(shelf.id)"
             class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 ml-2"

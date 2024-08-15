@@ -146,27 +146,28 @@ onMounted(async () => {
     console.error("Error loading shelf:", error);
   }
 });
-
 const saveChanges = async () => {
-  if (shelf.value) {
+  if (editedShelf.value) {
     try {
+      // Check if any changes have been made
       const hasChanged =
-        JSON.stringify(shelf.value) !== JSON.stringify(originalshelf.value);
+        JSON.stringify(editedShelf.value) !== JSON.stringify(shelf.value);
 
       if (hasChanged) {
         const shelveId = String(route.params.id);
-        shelf.value.updatedAt = new Date().toISOString();
+        editedShelf.value.updatedAt = new Date().toISOString();
 
         const updateSuccess = await updateData(
           `shelves/${shelveId}`,
-          shelf.value
+          editedShelf.value
         );
 
         if (updateSuccess) {
-          successMessage.value = "Product details updated successfully!";
-          originalshelf.value = JSON.parse(JSON.stringify(shelf.value));
+          successMessage.value = "Shelf details updated successfully!";
+          // Update the original shelf with the new data
+          shelf.value = JSON.parse(JSON.stringify(editedShelf.value));
         } else {
-          successMessage.value = "Failed to update product details.";
+          successMessage.value = "Failed to update shelf details.";
         }
 
         setTimeout(() => {
@@ -181,7 +182,7 @@ const saveChanges = async () => {
 
       disableEditing();
     } catch (error) {
-      console.error("Error updating product:", error);
+      console.error("Error updating shelf:", error);
     }
   }
 };

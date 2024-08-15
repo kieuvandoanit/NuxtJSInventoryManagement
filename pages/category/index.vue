@@ -13,19 +13,20 @@
     <!-- Category Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
-        v-for="(category, index) in categories"
+        v-for="category in categories"
         :key="category.categoryId"
         class="p-4 border rounded-md shadow-md"
       >
         <h2 class="text-xl font-bold">{{ category.name }}</h2>
         <h3 class="text-sm text-gray-600">{{ category.categoryId }}</h3>
-        <p class="text-sm font-semibold"
+        <p
+          class="text-sm font-semibold"
           :class="{
             'text-green-500': category.status === 0,
             'text-red-500': category.status !== 0,
           }"
         >
-          {{ category.status === 0 ? 'Available' : 'Not Available' }}
+          {{ category.status === 0 ? "Available" : "Not Available" }}
         </p>
         <p class="mt-2 text-gray-700">{{ category.description }}</p>
       </div>
@@ -58,7 +59,7 @@ const hasMore = ref(true);
 const currentPage = ref(1);
 
 const pageKeys = ref<(string | number | null)[]>([null]);
-const pageLimit = 5;
+const pageLimit = 10;
 
 const loadCategory = async (isNextPage: boolean = true) => {
   loading.value = true;
@@ -70,14 +71,23 @@ const loadCategory = async (isNextPage: boolean = true) => {
       pageLimit,
       lastKey
     );
-    categories.value = result.items;
+
+    if (isNextPage) {
+      categories.value = [...categories.value, ...result.items];
+    } else {
+      categories.value = result.items;
+    }
+
+    // Update pageKeys for next page navigation
     if (isNextPage) {
       const nextLastKey: string | number | null = result.lastKey ?? null;
       pageKeys.value[currentPage.value] = nextLastKey;
     }
+
+    // Check if there are more items to load
     hasMore.value = result.items.length === pageLimit;
   } catch (error) {
-    console.error("Error loading products:", error);
+    console.error("Error loading categories:", error);
   } finally {
     loading.value = false;
   }
