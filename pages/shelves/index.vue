@@ -13,11 +13,16 @@
     <!-- Shelves Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
-        v-for="(shelf, key) in shelves"
-        :key="key"
-        class="p-4 border rounded-md shadow-md cursor-pointer"
+        v-for="shelf in shelves"
+        :key="shelf.id"
+        class="p-4 border rounded-md shadow-md"
       >
-        <h2 class="text-xl font-bold">{{ key }} - {{ shelf.id }}</h2>
+        <NuxtLink
+          class="text-blue-500 hover:underline"
+          :to="`/shelves/${shelf.id}`"
+        >
+          <h2 class="text-xl font-bold">{{ shelf.id }}</h2>
+        </NuxtLink>
         <p>{{ shelf.description }}</p>
         <p><strong>Location:</strong> {{ shelf.location }}</p>
         <p>
@@ -33,6 +38,21 @@
         >
           {{ shelf.status === 0 ? "Available" : "Not Available" }}
         </p>
+        <!-- Edit and Delete Buttons -->
+        <div class="flex justify-end mt-4">
+          <NuxtLink
+            :to="`/shelves/edit/${shelf.id}`"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+          >
+            Edit
+          </NuxtLink>
+          <button
+            @click="handleDelete(shelf.id)"
+            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 ml-2"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
 
@@ -52,13 +72,12 @@ import { ref, onMounted } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Shelves from "~/interfaces/Shelves.interface";
 
-const { getItemsForPage } = useFirebaseDatabase();
+const { getItemsForPage, deleteData } = useFirebaseDatabase();
 
 const shelves = ref<Shelves[]>([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const currentPage = ref(1);
-
 const pageKeys = ref<(string | number | null)[]>([null]);
 const pageLimit = 6;
 
@@ -72,18 +91,14 @@ const loashelf = async (isNextPage: boolean = true) => {
       pageLimit,
       lastKey
     );
-    console.log("Fetched result:", result);
     shelves.value = result.items;
     if (isNextPage) {
       const nextLastKey: string | number | null = result.lastKey ?? null;
       pageKeys.value[currentPage.value] = nextLastKey;
     }
-
     hasMore.value = result.items.length === pageLimit;
-
-    console.log("Products loaded:", shelves.value); // Đầu ra debug
   } catch (error) {
-    console.error("Error loading products:", error);
+    console.error("Error loading shelves:", error);
   } finally {
     loading.value = false;
   }
@@ -107,11 +122,17 @@ const handlePreviousPage = async () => {
   }
 };
 
-function loadDatabase() {
-  throw new Error("Function not implemented.");
-}
+// Handle delete shelf
+const handleDelete = async (id: string) => {
+  if (confirm("Are you sure you want to delete this shelf?")) {
+    try {
+      await deleteData(`shelves/${id}`);
+      shelves.value = shelves.value.filter((shelf) => shelf.id !== id);
+      alert("Shelf deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting shelf:", error);
+      alert("Failed to delete shelf.");
+    }
+  }
+};
 </script>
-
-<style scoped>
-/* Add any additional styling here if needed */
-</style>

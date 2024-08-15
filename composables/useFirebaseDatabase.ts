@@ -14,6 +14,7 @@ import {
   type DatabaseReference,
 } from "firebase/database";
 import type Product from "~/interfaces/Product.interface";
+import type Shelves from "~/interfaces/Shelves.interface";
 
 interface PaginatedResult<T> {
   items: T[];
@@ -192,6 +193,21 @@ export const useFirebaseDatabase = () => {
       return null;
     }
   };
+  const getShelveById = async (shelveID: string): Promise<Shelves | null> => {
+    try {
+      const dbRef: DatabaseReference = ref($firebaseDB, `shelves/${shelveID}`);
+      const snapshot = await get(dbRef);
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No product found with ID:", shelveID);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return null;
+    }
+  };
 
   return {
     create,
@@ -202,5 +218,6 @@ export const useFirebaseDatabase = () => {
     updateData,
     deleteData,
     getProductById,
+    getShelveById,
   };
 };

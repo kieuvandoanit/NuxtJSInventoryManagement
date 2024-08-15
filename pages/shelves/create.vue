@@ -77,34 +77,24 @@ const shelve = ref<Shelves>({
   status: 0,
   createdAt: new Date().toISOString(),
 });
-
 const handleSubmit = async () => {
   try {
-    // Tạo một shelveId mới
+    // Generate a new shelveId
     const newShelveId = `SHEL_${Date.now()}`;
     shelve.value.shelveId = newShelveId;
 
-    // Chuẩn hóa dữ liệu để không chứa giá trị undefined
-    const preparedData: Partial<Shelves> = { ...shelve.value };
-    Object.keys(preparedData).forEach((key) => {
-      if (preparedData[key as keyof Shelves] === undefined) {
-        // Nếu kiểu dữ liệu của thuộc tính không cho phép null,
-        // có thể gán giá trị mặc định hoặc bỏ qua
-        preparedData[key as keyof Shelves] = shelve.value[
-          key as keyof Shelves
-        ] as Shelves[keyof Shelves];
-      }
-    });
+    // Prepare the data to avoid undefined values
+    const preparedData: Shelves = {
+      ...shelve.value,
+      createdAt: new Date().toISOString(), // Ensure createdAt is correctly formatted
+    };
 
-    // Tạo shelve trong cơ sở dữ liệu
-    const createResult = await create(
-      `shelves/${newShelveId}`,
-      newShelveId,
-      preparedData
-    );
+    // Create the shelve in the Firebase database
+    const createResult = await create(`shelves/${newShelveId}`, preparedData);
+
     if (createResult) {
       alert("Shelve created successfully!");
-      // Xóa dữ liệu sau khi tạo thành công (tùy chọn)
+      // Clear the form data after successful creation (optional)
       shelve.value = {
         shelveId: "",
         name: "",
