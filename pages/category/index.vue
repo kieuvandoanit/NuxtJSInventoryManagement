@@ -17,7 +17,13 @@
         :key="category.categoryId"
         class="p-4 border rounded-md shadow-md"
       >
-        <h2 class="text-xl font-bold">{{ category.name }}</h2>
+        <NuxtLink
+          class="text-blue-500 hover:underline"
+          :to="`/category/${category.id}`"
+        >
+          <h2 class="text-xl font-bold">{{ category.name }}</h2>
+        </NuxtLink>
+        <h2 class="text-xl font-bold">{{ category.categoryId }}</h2>
         <h3 class="text-sm text-gray-600">{{ category.categoryId }}</h3>
         <p
           class="text-sm font-semibold"
@@ -46,7 +52,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Category from "~/interfaces/Category.interface";
@@ -55,59 +61,75 @@ const { getItemsForPage } = useFirebaseDatabase();
 
 const categories = ref<Category[]>([]);
 const loading = ref(false);
-const hasMore = ref(true);
+const pageLimit = 20;
 const currentPage = ref(1);
 
-const pageKeys = ref<(string | number | null)[]>([null]);
-const pageLimit = 10;
+let lastKey: string | number | null | undefined = null;
+let firstKeys: number[] = [];
+const hasMore = ref(true);
 
-const loadCategory = async (isNextPage: boolean = true) => {
+const fetchCategoryForTheCurrentPage = async () => {
   loading.value = true;
+  console.log("Fetching categories for page:", currentPage.value);
+  console.log("Last key before fetch:", lastKey);
+
   try {
-    const lastKey = pageKeys.value[currentPage.value - 1] ?? null;
-    const result = await getItemsForPage<Category>(
+    const { items, lastKey: newLastKey } = await getItemsForPage<Category>(
       "categories",
       "createdAt",
       pageLimit,
       lastKey
     );
 
-    if (isNextPage) {
-      categories.value = [...categories.value, ...result.items];
-    } else {
-      categories.value = result.items;
+    console.log("Fetched items:", items);
+    console.log("New last key:", newLastKey);
+    categories.value = items;
+    lastKey = newLastKey;
+
+    // If there are no items, handle it gracefully
+    if (items.length > 0 && currentPage.value > firstKeys.length) {
+      firstKeys.push(items[items.length - 1]?.createdAt || 0);
     }
 
-    // Update pageKeys for next page navigation
-    if (isNextPage) {
-      const nextLastKey: string | number | null = result.lastKey ?? null;
-      pageKeys.value[currentPage.value] = nextLastKey;
-    }
-
-    // Check if there are more items to load
-    hasMore.value = result.items.length === pageLimit;
+    hasMore.value = items.length === pageLimit;
+    console.log("Has more:", hasMore.value);
+    console.log("Current page:", currentPage.value);
   } catch (error) {
-    console.error("Error loading categories:", error);
+    console.error("Error fetching categories for page:", error);
   } finally {
     loading.value = false;
   }
 };
 
+onMounted(async () => {
+  await fetchCategoryForTheCurrentPage();
+});
+
 const handleNextPage = async () => {
-  if (hasMore.value && !loading.value) {
-    currentPage.value++;
-    await loadCategory(true);
+  if (!hasMore.value || loading.value) {
+    console.log("Cannot go to next page. Either loading or no more data.");
+    return;
   }
+
+  console.log("Next page clicked.");
+  currentPage.value += 1;
+  console.log("Moving to page:", currentPage.value);
+  await fetchCategoryForTheCurrentPage();
 };
 
 const handlePreviousPage = async () => {
-  if (currentPage.value > 1 && !loading.value) {
-    currentPage.value--;
-    await loadCategory(false);
+  if (currentPage.value <= 1 || loading.value) {
+    console.log(
+      "Cannot go to previous page. Either loading or already on the first page."
+    );
+    return;
   }
-};
 
-onMounted(async () => {
-  await loadCategory();
-});
+  console.log("Previous page clicked.");
+  currentPage.value -= 1;
+  lastKey = firstKeys[currentPage.value - 2] || null;
+  console.log("Moving to page:", currentPage.value);
+  console.log("Setting last key to:", lastKey);
+  await fetchCategoryForTheCurrentPage();
+};
 </script>

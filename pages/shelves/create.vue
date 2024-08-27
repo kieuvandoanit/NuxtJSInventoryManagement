@@ -61,13 +61,13 @@
     </form>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref } from "vue";
+import { v4 as uuidv4 } from "uuid"; // Import uuidv4 function
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Shelves from "~/interfaces/Shelves.interface";
 
-// Khởi tạo đối tượng shelve với các giá trị mặc định
+// Initialize shelve object with default values
 const { create } = useFirebaseDatabase();
 const shelve = ref<Shelves>({
   shelveId: "",
@@ -75,18 +75,19 @@ const shelve = ref<Shelves>({
   description: "",
   location: "",
   status: 0,
-  createdAt: new Date().toISOString(),
+  createdAt: currentUnixTimestamp(),
 });
+
 const handleSubmit = async () => {
   try {
-    // Generate a new shelveId
-    const newShelveId = `SHEL_${Date.now()}`;
+    // Generate a new unique shelveId using uuidv4
+    const newShelveId = `SHEL_${uuidv4()}`;
     shelve.value.shelveId = newShelveId;
-
+    console.log(newShelveId);
     // Prepare the data to avoid undefined values
     const preparedData: Shelves = {
       ...shelve.value,
-      createdAt: new Date().toISOString(), // Ensure createdAt is correctly formatted
+      createdAt: currentUnixTimestamp(), // Ensure createdAt is correctly formatted
     };
 
     // Create the shelve in the Firebase database
@@ -101,7 +102,7 @@ const handleSubmit = async () => {
         description: "",
         location: "",
         status: 0,
-        createdAt: new Date().toISOString(),
+        createdAt: currentUnixTimestamp(),
       };
     } else {
       alert("Failed to create shelve.");

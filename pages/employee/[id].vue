@@ -1,6 +1,8 @@
 <template>
   <div class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-4">{{ employeeId ? 'Edit' : 'Create' }} Employee</h2>
+    <h2 class="text-2xl font-bold mb-4">
+      {{ employeeId ? "Edit" : "Create" }} Employee
+    </h2>
     <form @submit.prevent="submitForm">
       <div class="relative z-0 w-full mb-5 group">
         <input
@@ -135,9 +137,9 @@
             v-for="option in employeeStatusOption"
             :key="option.value"
             :value="option.value"
-            >
-              {{ option.label }}
-            </option>
+          >
+            {{ option.label }}
+          </option>
         </select>
         <label
           for="status"
@@ -158,27 +160,27 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
-import { EmployeeStatus, EmployeeRole } from '@/interfaces';;
-import { v4 as uuidv4 } from 'uuid';
-import type Employee from '~/interfaces/Employee.interface';
-import { useFirebaseDatabase } from '~/composables/useFirebaseDatabase';
+import { reactive } from "vue";
+import { EmployeeStatus, EmployeeRole } from "@/interfaces";
+import { v4 as uuidv4 } from "uuid";
+import type Employee from "~/interfaces/Employee.interface";
+import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 
 const { $toast } = useNuxtApp();
 const { create, getAndListen, updateData } = useFirebaseDatabase();
 const route = useRoute();
 
 // Declare state
-const employeeId = ref<string>('');
+const employeeId = ref<string>("");
 const employee = ref<Employee | null>(null);
 
 const form = reactive<Employee>({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  avatar: '',
-  phone: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  avatar: "",
+  phone: "",
   role: EmployeeRole.Staff,
   status: EmployeeStatus.Active,
 });
@@ -191,17 +193,17 @@ const populateForm = (data: Employee | null) => {
 };
 
 const employeeStatusOption = [
-  { value: EmployeeStatus.Active, label: 'Active' },
-  { value: EmployeeStatus.Inactive, label: 'Inactive'}
-]
+  { value: EmployeeStatus.Active, label: "Active" },
+  { value: EmployeeStatus.Inactive, label: "Inactive" },
+];
 
 const employeeRoleOption = [
-  { value: EmployeeRole.Manager, label: 'Manager' },
-  { value: EmployeeRole.Staff, label: 'Staff'}
-]
+  { value: EmployeeRole.Manager, label: "Manager" },
+  { value: EmployeeRole.Staff, label: "Staff" },
+];
 
-onMounted( async () => {
-  if (route.params.id && route.params.id !== 'create') {
+onMounted(async () => {
+  if (route.params.id && route.params.id !== "create") {
     employeeId.value = route.params.id as string;
   }
 
@@ -215,11 +217,9 @@ onMounted( async () => {
   }
 });
 
-
-
 // Function to handle form submission
 const submitForm = async () => {
-  const id = employeeId.value ? employeeId.value : `EMPL_${uuidv4()}` ; // Generate UUID
+  const id = employeeId.value ? employeeId.value : `EMPL_${uuidv4()}`; // Generate UUID
   let newEmployee: Employee = {
     id: id,
     firstName: form.firstName,
@@ -230,10 +230,12 @@ const submitForm = async () => {
     phone: form.phone,
     role: form.role,
     status: form.status,
-    createdAt: employee.value ? employee.value?.createdAt : currentUnixTimestamp(), 
-    createdBy: employee.value ? employee.value?.createdBy : '1',
+    createdAt: employee.value
+      ? employee.value?.createdAt
+      : currentUnixTimestamp(),
+    createdBy: employee.value ? employee.value?.createdBy : "1",
     updatedAt: currentUnixTimestamp(),
-    updatedBy: '1'
+    updatedBy: "1",
   };
 
   // Create/update employee
@@ -244,9 +246,9 @@ const submitForm = async () => {
     result = await create(`employees/${id}`, newEmployee);
   }
   if (result) {
-    let resultMessage = employeeId.value ? 'Edit' : 'Create'
+    let resultMessage = employeeId.value ? "Edit" : "Create";
     $toast.success(`${resultMessage} employee successful!`);
-    navigateTo('/employee');
+    navigateTo("/employee");
   }
 };
 </script>

@@ -15,6 +15,7 @@ import {
 } from "firebase/database";
 import type Product from "~/interfaces/Product.interface";
 import type Shelves from "~/interfaces/Shelves.interface";
+import type Category from "~/interfaces/Category.interface";
 
 interface PaginatedResult<T> {
   items: T[];
@@ -208,6 +209,28 @@ export const useFirebaseDatabase = () => {
       return null;
     }
   };
+  const getCategoryById = async (
+    categoryId: string
+  ): Promise<Category | null> => {
+    try {
+      console.log(`Fetching category with ID: ${categoryId}`);
+      const dbRef: DatabaseReference = ref(
+        $firebaseDB,
+        `categories/${categoryId}`
+      );
+      const snapshot = await get(dbRef);
+      if (snapshot.exists()) {
+        console.log("Category data:", snapshot.val());
+        return snapshot.val();
+      } else {
+        console.log("No category found with ID:", categoryId);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching category:", error);
+      return null;
+    }
+  };
 
   return {
     create,
@@ -219,5 +242,6 @@ export const useFirebaseDatabase = () => {
     deleteData,
     getProductById,
     getShelveById,
+    getCategoryById,
   };
 };

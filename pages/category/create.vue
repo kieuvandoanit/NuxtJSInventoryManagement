@@ -46,22 +46,24 @@
 import { ref } from "vue";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import type Category from "~/interfaces/Category.interface";
+import { v4 as uuidv4 } from "uuid";
 
-const { create, getItemsForPage } = useFirebaseDatabase();
+const { create } = useFirebaseDatabase();
 
 const category = ref<Category>({
   categoryId: "", // This will be generated automatically
   name: "",
   description: "",
   status: 0,
+  createdAt: currentUnixTimestamp(),
 });
 
 const handleSubmit = async () => {
   try {
-    // Generate a new category ID
-    const newCategoryId = await generateUniqueCategoryId();
+    // Generate a new category ID using uuidv4
+    const newCategoryId = `CATE_${uuidv4()}`;
     category.value.categoryId = newCategoryId;
-
+    console.log(newCategoryId);
     // Save the category to Firebase
     const success = await create(`categories/${newCategoryId}`, category.value);
     if (success) {
@@ -74,25 +76,5 @@ const handleSubmit = async () => {
     console.error("Error creating category:", error);
     alert("Error creating category.");
   }
-};
-
-// Function to generate a unique category ID
-const generateUniqueCategoryId = async (): Promise<string> => {
-  const { items } = await getItemsForPage<Category>(
-    "categories",
-    "categoryId",
-    100 // Retrieve a reasonable number of categories to check for uniqueness
-  );
-
-  // Generate a new ID based on current timestamp
-  let newCategoryId = `CATE_${Date.now()}`;
-
-  // Check for uniqueness
-  const ids = items.map((item) => item.categoryId);
-  while (ids.includes(newCategoryId)) {
-    newCategoryId = `CATE_${Date.now()}`;
-  }
-
-  return newCategoryId;
 };
 </script>
