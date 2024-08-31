@@ -28,7 +28,7 @@
           id="table-search-users"
           class="block pb-2 pt-2 ps-10 text-sm border rounded-lg w-80 bg-white-50 border-white-600 focus:border-blue-500"
           autocomplete="off"
-          placeholder="Search for users"
+          placeholder="Tìm kiếm nhân viên"
         />
       </div>
       <div>
@@ -36,17 +36,18 @@
           to="/employee/create"
           class="border item-center p-2 rounded-lg mr-2 bg-emerald-500 text-white hover:bg-emerald-700"
         >
-          Create User
+          Thêm nhân viên
         </NuxtLink>
       </div>
     </div>
     <table class="w-full text-sm text-left rtl:text-right text-white-500">
       <thead class="text-xs text-white-700 uppercase bg-white">
         <tr>
-          <th scope="col" class="px-6 py-3">Name</th>
-          <th scope="col" class="px-6 py-3">Position</th>
-          <th scope="col" class="px-6 py-3">Status</th>
-          <th scope="col" class="px-6 py-3">Action</th>
+          <th scope="col" class="px-6 py-3">Tên</th>
+          <th scope="col" class="px-6 py-3">Số điện thoại</th>
+          <th scope="col" class="px-6 py-3">Email</th>
+          <th scope="col" class="px-6 py-3">Vị trí</th>
+          <th scope="col" class="px-6 py-3">Hành động</th>
         </tr>
       </thead>
       <tbody>
@@ -61,23 +62,27 @@
           >
             <img
               class="w-10 h-10 rounded-full"
-              src="/public/avatar_1.jpg"
-              alt="Jese image"
+              :src="item.avatar"
+              alt="Avatar"
             />
             <div class="ps-3">
               <div class="text-base font-semibold">
                 {{ `${item.firstName} ${item.lastName}` }}
               </div>
-              <div class="font-normal text-white-500">{{ item.email }}</div>
+              <div class="font-normal text-white-500">{{ item.loginCode }}</div>
             </div>
           </th>
           <td class="px-6 py-4">
-            {{ getEnumKeyByValue(EmployeeRole, item.role) }}
+            {{ item.phone }}
           </td>
           <td class="px-6 py-4">
             <div class="flex items-center">
-              <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
-              {{ getEnumKeyByValue(EmployeeStatus, item.status) }}
+              {{ item.email }}
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex items-center">
+              {{ item.position }}
             </div>
           </td>
           <td class="px-6 py-4">
@@ -86,8 +91,16 @@
               type="button"
               class="font-medium text-blue-600 text-blue-500 hover:underline"
             >
-              Edit Employee
+              Sửa
             </NuxtLink>
+            <span class="mx-1">|</span>
+            <span
+              type="button"
+              class="font-medium text-red-600 text-red-500 hover:underline"
+              @click="deleteUser(item.id)"
+            >
+              Xóa
+            </span>
           </td>
         </tr>
       </tbody>
@@ -102,20 +115,24 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
-import type Employee from "~/interfaces/Employee.interface";
-import { EmployeeRole, EmployeeStatus } from "~/interfaces/Employee.interface";
+// Define middleware
+definePageMeta({
+    middleware: 'auth'
+});
 
-const { getItemsForPage } = useFirebaseDatabase();
+import { ref } from "vue";
+import { useFirebaseDatabase  } from "~/composables/useFirebaseDatabase";
+import type Employee from "~/interfaces/Employee.interface";
+
+const { getItemsForPage, deleteData } = useFirebaseDatabase();
 
 // Declare state
 const employeesList = ref<Employee[]>([]);
 const loading = ref(false);
-const pageLimit = 3;
+const pageLimit = 5;
 const currentPage = ref(1);
 
-let lastKey: string | number | null | undefined = null;
+let nextPageKey: string | number | null | undefined = null;
 let firstKeys: number[] = []; // To track keys for each page
 const hasMore = ref(true);
 
@@ -123,15 +140,16 @@ const hasMore = ref(true);
 const fetchItemForTheCurrentPage = async () => {
   loading.value = true;
   try {
-    const { items, lastKey: newLastKey } = await getItemsForPage<Employee>(
-      "employees",
+    const { items, nextPageKey: newKey } = await getItemsForPage<Employee>(
+      "stockCheck/employees/data",
       "createdAt",
       pageLimit,
-      lastKey
+      nextPageKey
     );
 
     employeesList.value = items;
-    lastKey = newLastKey;
+    console.log(items)
+    nextPageKey = newKey;
 
     // Update the first keys for previous navigation
     if (currentPage.value > firstKeys.length) {
@@ -139,7 +157,7 @@ const fetchItemForTheCurrentPage = async () => {
     }
 
     // Check if there's more data
-    hasMore.value = items.length === pageLimit;
+    hasMore.value = newKey ? true : false;
   } catch (error) {
     console.error("Error fetching items for page:", error);
   } finally {
@@ -162,7 +180,14 @@ const handlePreviousPage = async () => {
   if (currentPage.value === 1) return;
 
   currentPage.value -= 1;
-  lastKey = firstKeys[currentPage.value - 2] || null;
+  nextPageKey = firstKeys[currentPage.value - 2] || null;
   await fetchItemForTheCurrentPage();
 };
+
+const deleteUser = async (userId: string|undefined) => {
+  if (userId) {
+    await deleteData(`stockCheck/employees/data/${userId}`);
+    await fetchItemForTheCurrentPage();
+  }
+}
 </script>

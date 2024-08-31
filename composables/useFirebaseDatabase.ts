@@ -8,10 +8,10 @@ import {
   remove,
   query,
   orderByChild,
-  startAfter,
   limitToFirst,
-  equalTo,
   type DatabaseReference,
+  startAt,
+  equalTo,
 } from "firebase/database";
 import type Product from "~/interfaces/Product.interface";
 import type Shelves from "~/interfaces/Shelves.interface";
@@ -19,7 +19,8 @@ import type Category from "~/interfaces/Category.interface";
 
 interface PaginatedResult<T> {
   items: T[];
-  lastKey: T[keyof T] | null;
+  nextPageKey: T[keyof T] | null;
+  appendData?: any
 }
 
 export const useFirebaseDatabase = () => {
@@ -47,14 +48,15 @@ export const useFirebaseDatabase = () => {
     startAtValue: string | number | null = null
   ): Promise<PaginatedResult<T>> => {
     const dbRef = ref($firebaseDB, path);
+    const numberItemNeedGet = pageLimit + 1;
 
     let queryConstraints: any[] = [
       orderByChild(orderByField as string),
-      limitToFirst(pageLimit),
+      limitToFirst(numberItemNeedGet),
     ];
 
     if (startAtValue) {
-      queryConstraints.push(startAfter(startAtValue));
+      queryConstraints.push(startAt(startAtValue));
     }
 
     const queryDb = await query(dbRef, ...queryConstraints);
@@ -64,22 +66,26 @@ export const useFirebaseDatabase = () => {
       const snapshot = await get(queryDb);
       if (snapshot.exists()) {
         const data = snapshot.val();
+        
         const sortedData: T[] = Object.keys(data)
           .map((key) => ({ id: key, ...data[key] }))
           .sort((a, b) => (a[orderByField] > b[orderByField] ? 1 : -1));
 
-        const newLastOrderByValue =
-          sortedData.length > 0
-            ? sortedData[sortedData.length - 1][orderByField]
-            : null;
+        let nextPageKey = null;
+
+        if (sortedData.length > 0 && sortedData.length === numberItemNeedGet) {
+          nextPageKey = sortedData[numberItemNeedGet - 1][orderByField];
+          sortedData.pop();
+        }
+
         return {
           items: sortedData,
-          lastKey: newLastOrderByValue,
+          nextPageKey: nextPageKey,
         };
       } else {
         return {
           items: [],
-          lastKey: null,
+          nextPageKey: null,
         };
       }
     } catch (error) {
@@ -87,6 +93,14 @@ export const useFirebaseDatabase = () => {
       throw error;
     }
   };
+
+  async function getObjectsByIds<T>(path: string, ids: string[]): Promise<T[]> {
+    const dbRef = ref($firebaseDB, path);
+    const promises = ids.map(id => get(child(dbRef, id)));
+    const snapshots = await Promise.all(promises);
+    const objects = snapshots.map(snapshot => snapshot.val() as T);
+    return objects;
+  }
 
   const getAndListen = <T>(
     path: string,
@@ -151,31 +165,30 @@ export const useFirebaseDatabase = () => {
     return remove(dataRef);
   };
 
-  // const searchItems = async <T>(
-  //   path: string,
-  //   searchField: keyof T,
-  //   searchValue: string | number
-  // ): Promise<T[]> => {
-  //   const dbRef = ref($firebaseDB, path);
-  //   const queryDb = query(
-  //     dbRef,
-  //     orderByChild(searchField as string),
-  //     equalTo(searchValue)
-  //   );
+  const findEmployeeByLoginCode = async (loginCode: string) => {
+    const dbRef: DatabaseReference = ref(
+      $firebaseDB,
+      `stockCheck/employees/data`
+    );
+    const q = query(dbRef, orderByChild('loginCode'), equalTo(loginCode));
+    let result = null;
 
-  //   try {
-  //     const snapshot = await get(queryDb);
-  //     if (snapshot.exists()) {
-  //       const data = snapshot.val();
-  //       return Object.keys(data).map((key) => ({ id: key, ...data[key] }));
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (error) {
-  //     console.error("Error searching data:", error);
-  //     throw error;
-  //   }
-  // };
+    try {
+      const snapshot = await get(q);
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          result = childSnapshot.val();
+        });
+      } else {
+        console.log('No matching user found.');
+      }
+    } catch (error) {
+      console.error('Error fetching user by email:', error);
+    } finally {
+      return result;
+    }
+  }
+
   const getProductById = async (productId: string): Promise<Product | null> => {
     try {
       const dbRef: DatabaseReference = ref(
@@ -239,9 +252,11 @@ export const useFirebaseDatabase = () => {
     getOnce,
     getOnceWithObserver,
     updateData,
+    getObjectsByIds,
     deleteData,
     getProductById,
     getShelveById,
     getCategoryById,
+    findEmployeeByLoginCode,
   };
 };

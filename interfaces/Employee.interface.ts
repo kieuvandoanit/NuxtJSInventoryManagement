@@ -5,19 +5,12 @@ export default interface Employee extends Timestamp {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  loginCode: string;
   avatar: string;
   phone: string;
-  role: EmployeeRole;
-  status: EmployeeStatus;
+  position: string;
 }
 
-export enum EmployeeRole {
-  "Manager" = 1,
-  "Staff" = 2
-}
-
-export enum EmployeeStatus {
-  "Active" = 1,
-  "Inactive" = 2,
+export interface EmployeeCollection extends Timestamp {
+  data: Employee
 }

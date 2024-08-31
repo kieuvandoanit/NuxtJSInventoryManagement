@@ -1,5 +1,4 @@
 
-import { NuxtLink } from '#build/components';
 <template>
   <nav class="flex items-center justify-between flex-wrap bg-teal-500 p-6">
     <div class="flex items-center flex-shrink-0 text-white mr-6">
@@ -15,7 +14,7 @@ import { NuxtLink } from '#build/components';
         />
       </svg>
       <span class="font-semibold text-xl tracking-tight"
-        >Inventory Management</span
+        >Quản lý tồn kho</span
       >
     </div>
     <div class="block lg:hidden">
@@ -27,7 +26,7 @@ import { NuxtLink } from '#build/components';
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <title>Menu</title>
+          <title>Lựa chọn</title>
           <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
         </svg>
       </button>
@@ -35,26 +34,44 @@ import { NuxtLink } from '#build/components';
     <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
       <div class="text-sm lg:flex-grow">
         <NuxtLink to="/employee" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-          Employees
+          Nhân viên
         </NuxtLink>
         <NuxtLink to="/category" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-          Category
+          Danh mục
         </NuxtLink>
         <NuxtLink to="/shelves" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-          Shelves
+          Kệ hàng
         </NuxtLink>
         <NuxtLink to="/products/products" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-          Products
+          Sản phẩm
         </NuxtLink>
-        <NuxtLink to="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-          Inventory Check
+        <NuxtLink to="/stock-check" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+          Kiểm tra hàng hóa
         </NuxtLink>
       </div>
-      <div>
+      <div v-if="!user">
         <NuxtLink to="/login" class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0">
-          Login
+          Đăng nhập
         </NuxtLink>
+      </div>
+      <div v-else class="flex gap-[15px] text-white">
+        <div class="text-white">
+          <span class="text-[13px]">Xin chào,</span>
+          <span class="font-bold"> {{ `${user.firstName} ${user.lastName}` }}</span>
+        </div>
+        <button @click="logout" class="text-orange-900 hover:font-bold px-[10px]">
+          Đăng xuất
+        </button>
       </div>
     </div>
   </nav>
 </template>
+<script lang="ts" setup>
+const { user, clearUser } = useUser();
+
+const logout = async () => {
+  clearUser();
+  // Redirect to the login page
+  navigateTo('/login');
+}
+</script>

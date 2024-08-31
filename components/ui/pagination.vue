@@ -6,7 +6,7 @@
         :class="{ disabled: currentPage === 1 || loading}"
         @click.prevent="previousPage()"
       >
-        Previous
+        Trước
       </li>
       <li
         class="relative z-10 inline-flex items-center px-4 py-2 ring-1 ring-inset bg-indigo-600 ring-gray-300 text-white text-sm font-semibold"
@@ -18,7 +18,7 @@
         @click.prevent="nextPage()"
         class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 rounded-r-md"
       >
-        Next
+        Sau
       </li>
     </nav>
   </div>

@@ -1,9 +1,18 @@
 import type Timestamp from "./Timestamp.interface";
 
 export default interface Shelves extends Timestamp {
-  shelveId: string;
+  id: string;
   name: string;
   description: string;
-  location: string;
   status: number;
+}
+
+export interface ShelfCollection extends Timestamp {
+  data: Shelves
+}
+
+export enum ShelfStatus {
+  ENABLE = 0,
+  DISABLE = 1,
+  FULL = 2
 }

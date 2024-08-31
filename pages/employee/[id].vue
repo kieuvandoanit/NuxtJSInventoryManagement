@@ -17,7 +17,7 @@
         <label
           for="firstName"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >First Name</label
+          >Họ</label
         >
       </div>
 
@@ -34,7 +34,7 @@
         <label
           for="lastName"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Last Name</label
+          >Tên</label
         >
       </div>
 
@@ -51,24 +51,24 @@
         <label
           for="email"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Email Address</label
+          >Email</label
         >
       </div>
 
       <div class="relative z-0 w-full mb-5 group">
         <input
-          v-model="form.password"
-          type="password"
-          id="password"
+          v-model="form.loginCode"
+          type="text"
+          id="loginCode"
           autocomplete="false"
           class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
           required
         />
         <label
-          for="password"
+          for="loginCode"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Password</label
+          >Login Code</label
         >
       </div>
 
@@ -85,7 +85,7 @@
         <label
           for="avatar"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Avatar</label
+          >Ảnh đại điện</label
         >
       </div>
 
@@ -100,59 +100,32 @@
         <label
           for="phone"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Phone</label
+          >Số điện thoại</label
         >
       </div>
 
       <div class="relative z-0 w-full mb-6 group">
         <select
-          v-model.number="form.role"
-          id="role"
+          v-model.position="form.position"
+          id="position"
           class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           required
         >
-          <option
-            v-for="option in employeeRoleOption"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
+          <option value="Quản trị viên"> Quản trị viên </option>
+          <option value="Kiểm kho"> Kiểm kho </option>
         </select>
         <label
           for="role"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Role</label
+          >Chức vụ</label
         >
       </div>
-
-      <div class="relative z-0 w-full mb-6 group">
-        <select
-          v-model.number="form.status"
-          id="status"
-          class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-          required
-        >
-          <option
-            v-for="option in employeeStatusOption"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-        <label
-          for="status"
-          class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Status</label
-        >
-      </div>
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-center">
         <button
           type="submit"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
-          Submit
+          Xác nhận
         </button>
       </div>
     </form>
@@ -160,11 +133,16 @@
 </template>
 
 <script setup lang="ts">
+// Define middleware
+definePageMeta({
+    middleware: 'auth'
+});
+
 import { reactive } from "vue";
-import { EmployeeStatus, EmployeeRole } from "@/interfaces";
 import { v4 as uuidv4 } from "uuid";
 import type Employee from "~/interfaces/Employee.interface";
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
+import { getCurrentUser } from "~/utils/index";
 
 const { $toast } = useNuxtApp();
 const { create, getAndListen, updateData } = useFirebaseDatabase();
@@ -178,11 +156,10 @@ const form = reactive<Employee>({
   firstName: "",
   lastName: "",
   email: "",
-  password: "",
+  loginCode: "",
   avatar: "",
   phone: "",
-  role: EmployeeRole.Staff,
-  status: EmployeeStatus.Active,
+  position: "",
 });
 
 // Function to fetch data and populate the form
@@ -192,16 +169,6 @@ const populateForm = (data: Employee | null) => {
   }
 };
 
-const employeeStatusOption = [
-  { value: EmployeeStatus.Active, label: "Active" },
-  { value: EmployeeStatus.Inactive, label: "Inactive" },
-];
-
-const employeeRoleOption = [
-  { value: EmployeeRole.Manager, label: "Manager" },
-  { value: EmployeeRole.Staff, label: "Staff" },
-];
-
 onMounted(async () => {
   if (route.params.id && route.params.id !== "create") {
     employeeId.value = route.params.id as string;
@@ -210,7 +177,7 @@ onMounted(async () => {
   // Case edit employee
   if (employeeId.value) {
     // fetch current employee value
-    getAndListen<Employee>(`employees/${employeeId.value}`, (fetchedData) => {
+    getAndListen<Employee>(`stockCheck/employees/data/${employeeId.value}`, (fetchedData) => {
       employee.value = fetchedData;
       populateForm(fetchedData);
     });
@@ -220,34 +187,37 @@ onMounted(async () => {
 // Function to handle form submission
 const submitForm = async () => {
   const id = employeeId.value ? employeeId.value : `EMPL_${uuidv4()}`; // Generate UUID
+  const currentUser = getCurrentUser();
+
   let newEmployee: Employee = {
     id: id,
     firstName: form.firstName,
     lastName: form.lastName,
     email: form.email,
-    password: form.password,
+    loginCode: form.loginCode,
     avatar: form.avatar,
     phone: form.phone,
-    role: form.role,
-    status: form.status,
+    position: form.position,
     createdAt: employee.value
       ? employee.value?.createdAt
       : currentUnixTimestamp(),
-    createdBy: employee.value ? employee.value?.createdBy : "1",
+    createdBy: employee.value ? employee.value?.createdBy : currentUser?.id,
     updatedAt: currentUnixTimestamp(),
-    updatedBy: "1",
+    updatedBy: currentUser?.id,
   };
+
+  console.log(newEmployee);
 
   // Create/update employee
   let result: boolean = false;
   if (employeeId.value) {
-    result = await updateData(`employees/${id}`, newEmployee);
+    result = await updateData(`stockCheck/employees/data/${id}`, newEmployee);
   } else {
-    result = await create(`employees/${id}`, newEmployee);
+    result = await create(`stockCheck/employees/data/${id}`, newEmployee);
   }
   if (result) {
-    let resultMessage = employeeId.value ? "Edit" : "Create";
-    $toast.success(`${resultMessage} employee successful!`);
+    let resultMessage = employeeId.value ? "Chỉnh sửa" : "Tạo mới";
+    $toast.success(`${resultMessage} nhân viên thành công!`);
     navigateTo("/employee");
   }
 };

@@ -1,14 +1,17 @@
 import type Timestamp from './Timestamp.interface';
 
 export default interface Product extends Timestamp {
-  productId: string;
+  id: string;
   name: string;
   description: string;
+  note: string;
   image: string;
-  categoryId: Array<string>;
-  shelves: Array<string>;
-  price: number;
-  sku: string;
+  categoryId: string;
+  shelfId: string;
   status: number;
   quantity: number;
+}
+
+export interface ProductCollection extends Timestamp {
+  data: Product
 }
