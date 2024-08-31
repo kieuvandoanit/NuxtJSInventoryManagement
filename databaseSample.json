@@ -29,6 +29,11 @@
       "name": "Thời trang nữ",
       "description": "Thời trang nữ",
       "status": 0
+    },
+    "CATE_0007": {
+      "name": "Thời trang Nam",
+      "description": "Thời trang Nam",
+      "status": 0
     }
   },
   "products": {
@@ -93,6 +98,7 @@
       "createdAt": "2024-07-15T12:00:00Z"
     }
   },
+
   "employees": {
     "EMPL_0001": {
       "firstName": "Nguyễn",
@@ -153,6 +159,41 @@
       "location": "Kho Hồ Chí Minh",
       "status": 0,
       "createdAt": "2024-07-15T12:00:00Z"
+    },
+    "SHEL_0005": {
+      "createdAt": "2024-07-15T12:00:00Z",
+      "description": "Kệ 1 góc trái",
+      "location": "Kho Hồ Chí Minh",
+      "name": "Kệ 1",
+      "status": 0
+    },
+    "SHEL_0006": {
+      "createdAt": "2024-07-16T12:00:00Z",
+      "description": "Kệ 2 góc phải",
+      "location": "Kho Hà Nội",
+      "name": "Kệ 2",
+      "status": 1
+    },
+    "SHEL_0007": {
+      "createdAt": "2024-07-17T12:00:00Z",
+      "description": "Kệ 3 giữa phòng",
+      "location": "Kho Đà Nẵng",
+      "name": "Kệ 3",
+      "status": 0
+    },
+    "SHEL_0008": {
+      "createdAt": "2024-07-18T12:00:00Z",
+      "description": "Kệ 4 gần cửa",
+      "location": "Kho Cần Thơ",
+      "name": "Kệ 4",
+      "status": 1
+    },
+    "SHEL_0009": {
+      "createdAt": "2024-07-19T12:00:00Z",
+      "description": "Kệ 5 cạnh tường",
+      "location": "Kho Hải Phòng",
+      "name": "Kệ 5",
+      "status": 0
     }
   },
   "inventoryChecks": {

@@ -17,6 +17,7 @@
             {{ product.name }}
           </h2>
         </div>
+
         <div v-if="!editing" class="space-y-4">
           <p>
             <strong class="font-medium text-gray-700">Product ID:</strong>
@@ -27,9 +28,8 @@
             {{ product.description }}
           </p>
           <p>
-            <strong class="font-medium text-gray-700">Price:</strong> ${{
-              product.price.toLocaleString()
-            }}
+            <strong class="font-medium text-gray-700">Price:</strong>
+            ${{ product.price.toLocaleString() }}
           </p>
           <p>
             <strong class="font-medium text-gray-700">Quantity:</strong>
@@ -41,7 +41,11 @@
           </p>
           <p>
             <strong class="font-medium text-gray-700">Status:</strong>
-            {{ product.status === 0 ? "Available" : "Out of Stock" }}
+            <span
+              :class="product.status === 0 ? 'text-green-500' : 'text-red-500'"
+            >
+              {{ product.status === 0 ? "Available" : "Out of Stock" }}
+            </span>
           </p>
           <p>
             <strong class="font-medium text-gray-700">Created At:</strong>
@@ -54,6 +58,7 @@
             Edit
           </button>
         </div>
+
         <div v-else class="space-y-4">
           <form @submit.prevent="saveChanges">
             <div class="mb-4">
@@ -110,8 +115,12 @@
               Cancel
             </button>
           </form>
-          <!-- Display the success message here -->
         </div>
+        <p v-if="product.updatedAt">
+          <strong class="font-medium text-gray-700">Updated At:</strong>
+          {{ new Date(product.updatedAt).toLocaleString() }}
+        </p>
+
         <NuxtLink
           to="/products/products"
           class="inline-block bg-blue-500 text-white py-2 px-4 rounded-lg text-center hover:bg-blue-600 transition"
@@ -123,13 +132,15 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useLocalDatabase } from "~/composables/useLocalDatabase";
+import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
 import { useRoute } from "vue-router";
+import type Product from "~/interfaces/Product.interface";
 
 const route = useRoute();
-const { getProductById, loadDatabase } = useLocalDatabase();
+const { getProductById, updateData } = useFirebaseDatabase();
 const product = ref<Product | null>(null);
 const editing = ref(false);
 const successMessage = ref<string | null>(null);
@@ -137,19 +148,15 @@ const originalProduct = ref<Product | null>(null);
 
 onMounted(async () => {
   try {
-    await loadDatabase();
+    const productId = String(route.params.id);
+    const fetchedProduct = await getProductById(productId);
 
-    // lay ID từ URL
-    const productId = route.params.id as string;
-    console.log("Product ID from route:", productId);
-
-    // in thong tin product by ID
-    const fetchedProduct = getProductById(productId);
-    console.log("Fetched Product:", fetchedProduct);
-
-    // Set the product data
-    product.value = fetchedProduct;
-    originalProduct.value = JSON.parse(JSON.stringify(fetchedProduct)); // Create a deep copy
+    if (fetchedProduct) {
+      product.value = fetchedProduct;
+      originalProduct.value = JSON.parse(JSON.stringify(fetchedProduct));
+    } else {
+      console.error("Product not found.");
+    }
   } catch (error) {
     console.error("Error loading product:", error);
   }
@@ -161,27 +168,36 @@ const enableEditing = () => {
 
 const disableEditing = () => {
   editing.value = false;
+  product.value = JSON.parse(JSON.stringify(originalProduct.value));
 };
 
 const saveChanges = async () => {
   if (product.value) {
     try {
-      // Check if product details have changed
       const hasChanged =
         JSON.stringify(product.value) !== JSON.stringify(originalProduct.value);
 
       if (hasChanged) {
-        console.log("Save Changes button clicked.");
-        console.log("Updated Product:", product.value);
-        successMessage.value = "Product details updated successfully!";
+        const productId = String(route.params.id);
+        product.value.updatedAt = new Date().toISOString();
 
-        // Hide the success message after 5 seconds
+        const updateSuccess = await updateData(
+          `products/${productId}`,
+          product.value
+        );
+
+        if (updateSuccess) {
+          successMessage.value = "Product details updated successfully!";
+          originalProduct.value = JSON.parse(JSON.stringify(product.value));
+        } else {
+          successMessage.value = "Failed to update product details.";
+        }
+
         setTimeout(() => {
           successMessage.value = null;
         }, 5000);
       } else {
         successMessage.value = "No changes detected.";
-
         setTimeout(() => {
           successMessage.value = null;
         }, 5000);
