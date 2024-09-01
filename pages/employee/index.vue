@@ -148,7 +148,6 @@ const fetchItemForTheCurrentPage = async () => {
     );
 
     employeesList.value = items;
-    console.log(items)
     nextPageKey = newKey;
 
     // Update the first keys for previous navigation

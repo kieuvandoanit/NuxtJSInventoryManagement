@@ -8,7 +8,7 @@ export default interface Category extends Timestamp {
 }
 
 export interface CategoryCollection extends Timestamp {
-  data: Category
+  data: Record<string, Category>
 }
 
 export enum CategoryStatus {

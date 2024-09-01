@@ -1,7 +1,7 @@
 import type Timestamp from "./Timestamp.interface";
 
 // Interface for a single stock check entry
-export default interface InventoryCheck extends Timestamp {
+export default interface ScanCheck {
   id: string;
   productId: string;
   employeeId: string;
@@ -11,7 +11,13 @@ export default interface InventoryCheck extends Timestamp {
   date: number;
 }
 
+export interface InventoryCheck extends Timestamp {
+  id: string;
+  name: string;
+  data: Record<string, ScanCheck>;
+}
+
 // Interface for the entire stock checks object
 export interface InventoryCheckCollection extends Timestamp {
-  data: InventoryCheck
+  data: Record<string, InventoryCheck>
 }

@@ -8,8 +8,13 @@ export default interface Product extends Timestamp {
   image: string;
   categoryId: string;
   shelfId: string;
-  status: number;
+  status: ProductStatus;
   quantity: number;
+}
+
+export enum ProductStatus {
+  ENABLE = 0,
+  DISABLE = 1
 }
 
 export interface ProductCollection extends Timestamp {

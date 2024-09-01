@@ -42,7 +42,7 @@
         <NuxtLink to="/shelves" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Kệ hàng
         </NuxtLink>
-        <NuxtLink to="/products/products" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+        <NuxtLink to="/products" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Sản phẩm
         </NuxtLink>
         <NuxtLink to="/stock-check" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">

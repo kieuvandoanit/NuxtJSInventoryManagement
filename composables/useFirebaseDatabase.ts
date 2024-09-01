@@ -19,7 +19,7 @@ import type Category from "~/interfaces/Category.interface";
 
 interface PaginatedResult<T> {
   items: T[];
-  nextPageKey: T[keyof T] | null;
+  nextPageKey: string | number | null | undefined;
   appendData?: any
 }
 
@@ -74,7 +74,7 @@ export const useFirebaseDatabase = () => {
         let nextPageKey = null;
 
         if (sortedData.length > 0 && sortedData.length === numberItemNeedGet) {
-          nextPageKey = sortedData[numberItemNeedGet - 1][orderByField];
+          nextPageKey = sortedData[numberItemNeedGet - 1][orderByField] as string;
           sortedData.pop();
         }
 
@@ -122,11 +122,14 @@ export const useFirebaseDatabase = () => {
     );
   };
 
-  const getOnce = (path: any) => {
+  const getOnce = async <T>(path: any): Promise<T | null> => {
     const dbRef = ref($firebaseDB);
-    get(child(dbRef, path)).then((snapshot) => {
-      return snapshot.val();
+    let result: T | null = null;
+    await get(child(dbRef, path)).then((snapshot) => {
+      result = snapshot.val();
     });
+
+    return result;
   };
 
   const getOnceWithObserver = (key: any, callbackFn: any) => {
@@ -189,39 +192,6 @@ export const useFirebaseDatabase = () => {
     }
   }
 
-  const getProductById = async (productId: string): Promise<Product | null> => {
-    try {
-      const dbRef: DatabaseReference = ref(
-        $firebaseDB,
-        `products/${productId}`
-      );
-      const snapshot = await get(dbRef);
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else {
-        console.log("No product found with ID:", productId);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      return null;
-    }
-  };
-  const getShelveById = async (shelveID: string): Promise<Shelves | null> => {
-    try {
-      const dbRef: DatabaseReference = ref($firebaseDB, `shelves/${shelveID}`);
-      const snapshot = await get(dbRef);
-      if (snapshot.exists()) {
-        return snapshot.val();
-      } else {
-        console.log("No product found with ID:", shelveID);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      return null;
-    }
-  };
   const getCategoryById = async (
     categoryId: string
   ): Promise<Category | null> => {
@@ -254,8 +224,6 @@ export const useFirebaseDatabase = () => {
     updateData,
     getObjectsByIds,
     deleteData,
-    getProductById,
-    getShelveById,
     getCategoryById,
     findEmployeeByLoginCode,
   };
