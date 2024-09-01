@@ -199,7 +199,7 @@ export const useFirebaseDatabase = () => {
       console.log(`Fetching category with ID: ${categoryId}`);
       const dbRef: DatabaseReference = ref(
         $firebaseDB,
-        `categories/${categoryId}`
+        `stockCheck/categories/data/${categoryId}`
       );
       const snapshot = await get(dbRef);
       if (snapshot.exists()) {

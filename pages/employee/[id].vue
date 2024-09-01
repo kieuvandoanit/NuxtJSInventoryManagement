@@ -103,7 +103,7 @@
           >Số điện thoại</label
         >
       </div>
-
+      
       <div class="relative z-0 w-full mb-6 group">
         <select
           v-model.position="form.position"
