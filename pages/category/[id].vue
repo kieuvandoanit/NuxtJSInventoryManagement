@@ -6,24 +6,6 @@
     <form @submit.prevent="submitForm">
       <div class="relative z-0 w-full mb-5 group">
         <input
-          v-model="categoryId"
-          type="text"
-          id="id"
-          autocomplete="false"
-          class="block py-2.5 px-0 w-full text-sm text-black text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-          placeholder=""
-          :readonly="!!categoryId" 
-          :disabled="!!create"
-        />
-        <label
-          for="id"
-          class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >ID</label
-        >
-      </div>
-
-      <div class="relative z-0 w-full mb-5 group">
-        <input
           v-model="form.name"
           type="text"
           id="name"
@@ -35,7 +17,7 @@
         <label
           for="name"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Name</label
+          >Tên Danh Mục</label
         >
       </div>
 
@@ -52,27 +34,10 @@
         <label
           for="description"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Description</label
+          >Mô Tả</label
         >
       </div>
 
-      <div class="relative z-0 w-full mb-5 group">
-        <input
-          v-model="form.createdBy"
-          type="text"
-          id="createdBy"
-          autocomplete="false"
-          class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-          placeholder=" "
-          required
-          readonly
-        />
-        <label
-          for="createdBy"
-          class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Created By</label
-        >
-      </div>
       
       <div class="relative z-0 w-full mb-5 group">
         <select
@@ -88,7 +53,7 @@
         <label
           for="status"
           class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-          >Status</label
+          >Trạng Thái</label
         >
       </div>
 
@@ -133,7 +98,7 @@ const form = reactive<Category>({
   description: "",
   createdAt: currentUnixTimestamp(), 
   updatedAt: currentUnixTimestamp(), 
-  createdBy: getCurrentUser()?.id || "",
+  createdBy:  "",
   updatedBy: getCurrentUser()?.id || "",
 });
 
@@ -148,16 +113,13 @@ const populateForm = (data: Category | null) => {
 onMounted(async () => {
   if (route.params.id && route.params.id !== "create") {
     categoryId.value = route.params.id as string;
-    console.log(categoryId.value);
   }
   if (categoryId.value) {
     getAndListen<Category>(`stockCheck/categories/data/${categoryId.value}`, (fetchedData) => {
       category.value = fetchedData;
-      console.log(category.value);
       populateForm(fetchedData);
     });
   }
-  console.log(`Fetching data from path: categories/data/${categoryId.value}`);
 
 });
 

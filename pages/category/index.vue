@@ -35,7 +35,7 @@
           to="/category/create"
           class="border item-center p-2 rounded-lg mr-2 bg-emerald-500 text-white hover:bg-emerald-700"
         >
-          Add Category
+         Tạo mới 
         </NuxtLink>
       </div>
     </div>
@@ -45,11 +45,11 @@
       <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100">
           <tr>
-            <th scope="col" class="px-6 py-3">Name</th>
-            <th scope="col" class="px-6 py-3">ID</th>
-            <th scope="col" class="px-6 py-3">Status</th>
-            <th scope="col" class="px-6 py-3">Description</th>
-            <th scope="col" class="px-6 py-3">Actions</th>
+            <th scope="col" class="px-6 py-3">Tên Danh Mục</th>
+            <th scope="col" class="px-6 py-3">Mã Sản Phẩm</th>
+            <th scope="col" class="px-6 py-3">Trạng Thái</th>
+            <th scope="col" class="px-6 py-3">Mô tả</th>
+            <th scope="col" class="px-6 py-3">Hành Động</th>
           </tr>
         </thead>
         <tbody>
@@ -74,8 +74,8 @@
                   'text-red-500': category.status !== 0,
                 }"
               >
-                {{ category.status === 0 ? "Available" : "Not Available" }}
-              </span>
+              {{ category.status === 0 ? "Available" : category.status === 1 ? "Not Available" : category.status === 2 ? "Paused" : "Unknown" }}
+            </span>
             </td>
             <td class="px-6 py-4">{{ category.description }}</td>
             <td class="px-6 py-4">
@@ -83,14 +83,14 @@
                 :to="`/category/${category.id}`"
                 class="font-medium text-blue-600 hover:underline"
               >
-                Edit
+                Sửa
               </NuxtLink>
               <span class="mx-1">|</span>
               <span
                 class="font-medium text-red-600 hover:underline cursor-pointer"
                 @click="deleteCatergory(category.id)"
               >
-                Delete
+                Xóa
               </span>
             </td>
           </tr>
@@ -133,8 +133,6 @@ const hasMore = ref(true);
 
 const fetchCategoryForTheCurrentPage = async () => {
   loading.value = true;
-  console.log("Fetching categories for page:", currentPage.value);
-  console.log("Last key before fetch:", lastKey);
   try {
     const { items, nextPageKey: newLastKey } = await getItemsForPage<Category>(
       "stockCheck/categories/data",
@@ -142,9 +140,6 @@ const fetchCategoryForTheCurrentPage = async () => {
       pageLimit,
       lastKey
     );
-
-    console.log("Fetched items:", items);
-    console.log("New last key:", newLastKey);
     categories.value = items;
     lastKey = newLastKey;
 
@@ -152,10 +147,7 @@ const fetchCategoryForTheCurrentPage = async () => {
     if (items.length > 0 && currentPage.value > firstKeys.length) {
       firstKeys.push(items[items.length - 1]?.createdAt || 0);
     }
-
     hasMore.value = items.length === pageLimit;
-    console.log("Has more:", hasMore.value);
-    console.log("Current page:", currentPage.value);
   } catch (error) {
     console.error("Error fetching categories for page:", error);
   } finally {
@@ -169,32 +161,25 @@ onMounted(async () => {
 
 const handleNextPage = async () => {
   if (!hasMore.value || loading.value) {
-    console.log("Cannot go to next page. Either loading or no more data.");
+    console.error("Cannot go to next page. Either loading or no more data.");
     return;
   }
 
-  console.log("Next page clicked.");
   currentPage.value += 1;
-  console.log("Moving to page:", currentPage.value);
   await fetchCategoryForTheCurrentPage();
 };
 
 const handlePreviousPage = async () => {
   if (currentPage.value <= 1 || loading.value) {
-    console.log(
+    console.error(
       "Cannot go to previous page. Either loading or already on the first page."
     );
     return;
   }
-
-  console.log("Previous page clicked.");
   currentPage.value -= 1;
   lastKey = firstKeys[currentPage.value - 2] || null;
-  console.log("Moving to page:", currentPage.value);
-  console.log("Setting last key to:", lastKey);
   await fetchCategoryForTheCurrentPage();
 };
-
 
 const deleteCatergory = async (catID: string|undefined) => {
   if (catID) {
