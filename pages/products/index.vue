@@ -71,7 +71,7 @@
             </div>
           </td>
           <td class="px-6 py-4">
-            <div class="flex items-center" @click="openModal(item.id, item.name)">
+            <div class="flex items-center cursor-pointer" @click="openModal(item.id, item.name)">
               Hiển thị
             </div>
           </td>

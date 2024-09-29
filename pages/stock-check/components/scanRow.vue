@@ -16,6 +16,16 @@
       </div>
     </td>
     <td class="px-6 py-4">
+      <span
+        :class="{
+          'text-green-500': scanCheck.status == 0,
+          'text-red-500': scanCheck.status != 0,
+        }"
+      >
+      {{ scanCheck.status == 0 ? "Tốt" : "Hư hỏng" }}
+    </span>
+    </td>
+    <td class="px-6 py-4">
       <div class="text-center">{{ shelfData?.name }}</div>
     </td>
     <td class="px-6 py-4">
@@ -33,6 +43,9 @@
       </div>
       <div v-else><div class="rounded-full px-[10px] py-[4px] text-center text-[12px] bg-red-700 font-bold text-white">Không khớp</div></div>
     </td>
+    <td class="px-6 py-4">
+      <button class="rounded-full px-[30px] py-[4px] text-center text-[12px] bg-gray-700 font-bold text-white" @click="deleteScanRow(scanCheck.id)"> Xóa </button>
+    </td>
   </tr>
 </template>
 <script lang="ts" setup>
@@ -42,10 +55,11 @@ import type Employee from '~/interfaces/Employee.interface';
 import type Shelves from '~/interfaces/Shelves.interface';
 import type Product from '~/interfaces/Product.interface';
 
-const { getOnce } = useFirebaseDatabase();
+const { getOnce, deleteData } = useFirebaseDatabase();
 
 const props = defineProps<{
-  scanCheck: ScanCheck
+  scanCheck: ScanCheck,
+  cycleId: string
 }>();
 const employeeData = ref<Employee | null>(null);
 const shelfData = ref<Shelves | null>(null);
@@ -80,4 +94,8 @@ const checkStatusIsCorrect: ComputedRef<Boolean> = computed(() => {
 
   return result;
 });
+
+const deleteScanRow = async (scanCheckId: string) => {
+  await deleteData(`stockCheck/inventoryCheck/data/${props.cycleId}/data/${scanCheckId}`);
+}
 </script>

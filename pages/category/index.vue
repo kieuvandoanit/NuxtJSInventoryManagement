@@ -51,7 +51,7 @@
             </td>
             <td class="px-6 py-4">{{ category.description }}</td>
             <td class="px-6 py-4">
-            <div class="flex items-center" @click="openModal(category.id, category.name)">
+            <div class="flex items-center cursor-pointer" @click="openModal(category.id, category.name)">
               Hiển thị
             </div>
           </td>
