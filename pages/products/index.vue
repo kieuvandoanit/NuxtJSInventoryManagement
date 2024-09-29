@@ -19,6 +19,7 @@
           <th scope="col" class="px-6 py-3">Danh mục</th>
           <th scope="col" class="px-6 py-3">Kệ</th>
           <th scope="col" class="px-6 py-3">Trạng thái</th>
+          <th scope="col" class="px-6 py-3">QR Code</th>
           <th scope="col" class="px-6 py-3">Hành động</th>
         </tr>
       </thead>
@@ -70,6 +71,11 @@
             </div>
           </td>
           <td class="px-6 py-4">
+            <div class="flex items-center" @click="openModal(item.id, item.name)">
+              Hiển thị
+            </div>
+          </td>
+          <td class="px-6 py-4">
             <NuxtLink
               :to="`/products/${item.id}`"
               type="button"
@@ -98,6 +104,15 @@
       @next-page="handleNextPage"
       @previous-page="handlePreviousPage"
     />
+
+    <!-- QRCodeModal component -->
+    <UiQrCodeModal 
+      v-if="isModalVisible"
+      :showModal="isModalVisible"
+      :id="selectedProductId"
+      :name="selectedProductName"
+      @close="closeModal"
+    />
   </div>
 </template>
 
@@ -117,6 +132,11 @@ const shelvesList = ref<Shelves[]>([]);
 const loading = ref(false);
 const pageLimit = 5;
 const currentPage = ref(1);
+
+// Qr Code modal
+const isModalVisible = ref(false);
+let selectedProductId = '';
+let selectedProductName = '';
 
 let nextPageKey: string | number | null | undefined = null;
 let firstKeys: number[] = []; // To track keys for each page
@@ -197,5 +217,14 @@ function getCategoryName(categoryId: string): string {
 function getShelfName(shelfId: string): string {
   const shelf = shelvesList.value.find((she) => she.id === shelfId);
   return shelf ? shelf.name : 'Unknown';
+}
+
+function openModal(productId: string, productName: string) {
+  selectedProductId = productId;
+  selectedProductName = productName;
+  isModalVisible.value = true;
+}
+function closeModal() {
+  isModalVisible.value = false;
 }
 </script>

@@ -17,6 +17,7 @@
           <th scope="col" class="px-6 py-3">Số điện thoại</th>
           <th scope="col" class="px-6 py-3">Email</th>
           <th scope="col" class="px-6 py-3">Vị trí</th>
+          <th scope="col" class="px-6 py-3">QR Code</th>
           <th scope="col" class="px-6 py-3">Hành động</th>
         </tr>
       </thead>
@@ -56,6 +57,11 @@
             </div>
           </td>
           <td class="px-6 py-4">
+            <div class="flex items-center" @click="openModal(item.id, item.lastName)">
+              Hiển thị
+            </div>
+          </td>
+          <td class="px-6 py-4">
             <NuxtLink
               :to="`/employee/${item.id}`"
               type="button"
@@ -82,6 +88,15 @@
       @next-page="handleNextPage"
       @previous-page="handlePreviousPage"
     />
+
+    <!-- QRCodeModal component -->
+    <UiQrCodeModal 
+      v-if="isModalVisible"
+      :showModal="isModalVisible"
+      :id="selectedEmployeeId"
+      :name="selectedEmployeeName"
+      @close="closeModal"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -105,6 +120,11 @@ const currentPage = ref(1);
 let nextPageKey: string | number | null | undefined = null;
 let firstKeys: number[] = []; // To track keys for each page
 const hasMore = ref(true);
+
+// Qr Code modal
+const isModalVisible = ref(false);
+let selectedEmployeeId = '';
+let selectedEmployeeName = '';
 
 // Fetch item for the current page
 const fetchItemForTheCurrentPage = async () => {
@@ -158,5 +178,14 @@ const deleteUser = async (userId: string|undefined) => {
     await deleteData(`stockCheck/employees/data/${userId}`);
     await fetchItemForTheCurrentPage();
   }
+}
+
+function openModal(id: string, name: string) {
+  selectedEmployeeId = id;
+  selectedEmployeeName = name;
+  isModalVisible.value = true;
+}
+function closeModal() {
+  isModalVisible.value = false;
 }
 </script>

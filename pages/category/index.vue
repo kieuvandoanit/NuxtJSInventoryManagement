@@ -20,6 +20,7 @@
             <th scope="col" class="px-6 py-3">Mã Danh Mục</th>
             <th scope="col" class="px-6 py-3">Trạng Thái</th>
             <th scope="col" class="px-6 py-3">Mô tả</th>
+            <th scope="col" class="px-6 py-3">QR Code</th>
             <th scope="col" class="px-6 py-3">Hành Động</th>
           </tr>
         </thead>
@@ -50,6 +51,11 @@
             </td>
             <td class="px-6 py-4">{{ category.description }}</td>
             <td class="px-6 py-4">
+            <div class="flex items-center" @click="openModal(category.id, category.name)">
+              Hiển thị
+            </div>
+          </td>
+            <td class="px-6 py-4">
               <NuxtLink
                 :to="`/category/${category.id}`"
                 class="font-medium text-blue-600 hover:underline"
@@ -79,6 +85,15 @@
         @previous-page="handlePreviousPage"
         class="w-full"
       />
+
+      <!-- QRCodeModal component -->
+    <UiQrCodeModal 
+      v-if="isModalVisible"
+      :showModal="isModalVisible"
+      :id="selectedCategoryId"
+      :name="selectedCategoryName"
+      @close="closeModal"
+    />
     </div>
   </div>
 </template>
@@ -101,6 +116,11 @@ const currentPage = ref(1);
 let lastKey: string | number | null | undefined = null;
 let firstKeys: number[] = [];
 const hasMore = ref(true);
+
+// Qr Code modal
+const isModalVisible = ref(false);
+let selectedCategoryId = '';
+let selectedCategoryName = '';
 
 const fetchCategoryForTheCurrentPage = async () => {
   loading.value = true;
@@ -157,5 +177,14 @@ const deleteCatergory = async (catID: string|undefined) => {
     await deleteData(`stockCheck/categories/data/${catID}`);
     await fetchCategoryForTheCurrentPage();
   }
+}
+
+function openModal(id: string, name: string) {
+  selectedCategoryId = id;
+  selectedCategoryName = name;
+  isModalVisible.value = true;
+}
+function closeModal() {
+  isModalVisible.value = false;
 }
 </script>

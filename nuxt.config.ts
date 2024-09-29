@@ -4,7 +4,7 @@ dotenv.config();
 export default defineNuxtConfig({
   target: "static",
   router: {
-    base: '/<repository-name>/'
+    base: 'InventoryManagement'
   },
   ssr: false,
   compatibilityDate: "2024-04-03",
