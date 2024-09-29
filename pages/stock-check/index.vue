@@ -133,8 +133,13 @@ const appendProgressStatus = async () => {
     let updatedTime = campaignStockCheck.updatedAt;
     
     // count list product with condition createdAt <= updatedTime
-    let listProducts = await getListProductWithConditionCreatedAt(updatedTime);
-    let listProductLength = Object.keys(listProducts ?? {}).length;
+    let listProducts: any = await getListProductWithConditionCreatedAt(updatedTime);
+
+    const filteredProducts = Object.fromEntries(
+      Object.entries(listProducts).filter(([key, value]) => value.quantity > 0)
+    );
+
+    let listProductLength = Object.keys(filteredProducts ?? {}).length;
 
     // count list scanned
     let scannedLength = Object.keys(campaignStockCheck.data ?? {}).length;
