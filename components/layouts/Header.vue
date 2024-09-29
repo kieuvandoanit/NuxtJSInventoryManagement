@@ -45,6 +45,9 @@
         <NuxtLink to="/products" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Sản phẩm
         </NuxtLink>
+        <NuxtLink to="/cycles" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+          Chiến dịch
+        </NuxtLink>
         <NuxtLink to="/stock-check" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
           Kiểm tra hàng hóa
         </NuxtLink>

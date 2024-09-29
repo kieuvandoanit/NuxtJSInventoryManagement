@@ -1,63 +1,41 @@
 <template>
-  <div class="relative shadow rounded overflow-hidden">
-    <div
-      class="flex items-center justify-end flex-column flex-wrap space-y-4 py-4 bg-white bg-white-900"
-    >
+  <div class="container mx-auto p-4 bg-white">
+    <!-- Create Button -->
+    <div class="flex justify-end mb-4">
       <NuxtLink
-        to="/employee/create"
-        class="border item-center p-2 rounded-lg mr-2 bg-emerald-500 text-white hover:bg-emerald-700"
+        to="/cycles/create"
+        class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-300"
       >
-        Thêm nhân viên
+        Thêm mới
       </NuxtLink>
     </div>
+
     <table class="w-full text-sm text-left rtl:text-right text-white-500">
       <thead class="text-xs text-white-700 uppercase bg-white">
         <tr>
-          <th scope="col" class="px-6 py-3">Tên</th>
-          <th scope="col" class="px-6 py-3">Số điện thoại</th>
-          <th scope="col" class="px-6 py-3">Email</th>
-          <th scope="col" class="px-6 py-3">Vị trí</th>
-          <th scope="col" class="px-6 py-3">Hành động</th>
+          <th scope="col" class="px-6 py-3 text-center">Tên chiến dịch</th>
+          <th scope="col" class="px-6 py-3 text-center">Trạng thái</th>
+          <th scope="col" class="px-6 py-3 text-center">Hành động</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="item in employeesList"
+          v-for="item in cycleList"
           :key="item.id"
           class="bg-white border-b bg-white-800 border-white-700 hover:bg-gray-100"
         >
-          <th
+          <td
             scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-black"
+            class="flex items-center justify-center px-6 py-4 text-black"
           >
-            <img
-              class="w-10 h-10 rounded-full"
-              :src="item.avatar"
-              alt="Avatar"
-            />
-            <div class="ps-3">
-              <div class="text-base font-semibold">
-                {{ `${item.firstName} ${item.lastName}` }}
-              </div>
-              <div class="font-normal text-white-500">{{ item.loginCode }}</div>
-            </div>
-          </th>
-          <td class="px-6 py-4">
-            {{ item.phone }}
+            {{ item.name }}
           </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              {{ item.email }}
-            </div>
+          <td class="px-6 py-4 text-center">
+            {{ item.status == 0 ? "Hoạt động" : item.status == 1 ? "Không hoạt động" : "Đầy" }}
           </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              {{ item.position }}
-            </div>
-          </td>
-          <td class="px-6 py-4">
+          <td class="px-6 py-4 text-center">
             <NuxtLink
-              :to="`/employee/${item.id}`"
+              :to="`/cycles/${item.id}`"
               type="button"
               class="font-medium text-blue-600 text-blue-500 hover:underline"
             >
@@ -67,7 +45,7 @@
             <span
               type="button"
               class="font-medium text-red-600 text-red-500 hover:underline"
-              @click="deleteUser(item.id)"
+              @click="deleteCycle(item.id)"
             >
               Xóa
             </span>
@@ -75,6 +53,8 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Pagination Component -->
     <UiPagination
       :loading="loading"
       :hasMore="hasMore"
@@ -84,20 +64,15 @@
     />
   </div>
 </template>
-<script lang="ts" setup>
-// Define middleware
-definePageMeta({
-    middleware: 'auth'
-});
 
-import { ref } from "vue";
-import { useFirebaseDatabase  } from "~/composables/useFirebaseDatabase";
-import type Employee from "~/interfaces/Employee.interface";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
+import type Cycle from "~/interfaces/Cycle.interface";
 
 const { getItemsForPage, deleteData } = useFirebaseDatabase();
 
-// Declare state
-const employeesList = ref<Employee[]>([]);
+const cycleList = ref<Cycle[]>([]);
 const loading = ref(false);
 const pageLimit = 5;
 const currentPage = ref(1);
@@ -110,14 +85,14 @@ const hasMore = ref(true);
 const fetchItemForTheCurrentPage = async () => {
   loading.value = true;
   try {
-    const { items, nextPageKey: newKey } = await getItemsForPage<Employee>(
-      "stockCheck/employees/data",
+    const { items, nextPageKey: newKey } = await getItemsForPage<Cycle>(
+      "stockCheck/cycles/data",
       "createdAt",
       pageLimit,
       nextPageKey
     );
 
-    employeesList.value = items;
+    cycleList.value = items;
     nextPageKey = newKey;
 
     // Update the first keys for previous navigation
@@ -153,10 +128,13 @@ const handlePreviousPage = async () => {
   await fetchItemForTheCurrentPage();
 };
 
-const deleteUser = async (userId: string|undefined) => {
-  if (userId) {
-    await deleteData(`stockCheck/employees/data/${userId}`);
+const deleteCycle = async (cycleId: string|undefined) => {
+  if (cycleId) {
+    await deleteData(`stockCheck/cycles/data/${cycleId}`);
     await fetchItemForTheCurrentPage();
+
+    // Delete in inventoryCheck
+    await deleteData(`stockCheck/inventoryCheck/data/${cycleId}`);
   }
 }
 </script>

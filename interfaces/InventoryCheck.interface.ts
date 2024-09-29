@@ -14,10 +14,17 @@ export default interface ScanCheck {
 export interface InventoryCheck extends Timestamp {
   id: string;
   name: string;
-  data: Record<string, ScanCheck>;
+  data?: Record<string, ScanCheck> | "";
+  status: InventoryStatus;
+  progress?: number;
 }
 
 // Interface for the entire stock checks object
 export interface InventoryCheckCollection extends Timestamp {
   data: Record<string, InventoryCheck>
+}
+
+export enum InventoryStatus {
+  ENABLE = 0,
+  DISABLE = 1
 }

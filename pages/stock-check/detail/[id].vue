@@ -28,7 +28,7 @@ import { ref } from 'vue';
 import type ScanCheck from '~/interfaces/InventoryCheck.interface';
 import type { InventoryCheck } from '~/interfaces/InventoryCheck.interface';
 import { useFirebaseDatabase } from "~/composables/useFirebaseDatabase";
-import ScanRow from "./components/scanRow.vue";
+import ScanRow from "../components/scanRow.vue";
 
 const { getAndListen } = useFirebaseDatabase();
 

@@ -2,6 +2,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default defineNuxtConfig({
+  target: "static",
+  router: {
+    base: '/<repository-name>/'
+  },
   ssr: false,
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },

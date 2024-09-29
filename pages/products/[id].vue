@@ -96,8 +96,8 @@
           class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           required
         >
-          <option value="0"> Hoạt động </option>
-          <option value="1"> Lỗi </option>
+          <option :value="ProductStatus.ENABLE"> Hoạt động </option>
+          <option :value="ProductStatus.DISABLE"> Lỗi </option>
         </select>
         <label
           for="status"
@@ -170,6 +170,7 @@ import { getCurrentUser } from "~/utils/index";
 import type Product from "~/interfaces/Product.interface";
 import type Category from "~/interfaces/Category.interface";
 import type Shelves from "~/interfaces/Shelves.interface";
+import { ProductStatus } from "~/interfaces/Product.interface";
 
 const { $toast } = useNuxtApp();
 const { create, getAndListen, updateData, getOnce } = useFirebaseDatabase();

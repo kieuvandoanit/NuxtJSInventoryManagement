@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!loading" class="container mx-auto p-4">
+  <div v-if="!loading" class="container mx-auto p-4 bg-white">
     <!-- Create Button -->
     <div class="flex justify-end mb-4">
       <NuxtLink
@@ -13,9 +13,8 @@
     <table class="w-full text-sm text-left rtl:text-right text-white-500">
       <thead class="text-xs text-white-700 uppercase bg-white">
         <tr>
-          <th scope="col" class="px-6 py-3">Tên</th>
+          <th scope="col" class="px-6 py-3 w-[200px]">Tên</th>
           <th scope="col" class="px-6 py-3">Mô tả</th>
-          <th scope="col" class="px-6 py-3">Ghi chú</th>
           <th scope="col" class="px-6 py-3">Số lượng</th>
           <th scope="col" class="px-6 py-3">Danh mục</th>
           <th scope="col" class="px-6 py-3">Kệ</th>
@@ -46,11 +45,6 @@
           </th>
           <td class="px-6 py-4">
             {{ item.description }}
-          </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              {{ item.note }}
-            </div>
           </td>
           <td class="px-6 py-4">
             <div class="flex items-center">

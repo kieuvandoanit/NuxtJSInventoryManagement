@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto p-4 bg-white">
     <!-- Create Button -->
     <div class="flex justify-end mb-4">
       <NuxtLink
@@ -35,7 +35,7 @@
             {{ item.description }}
           </td>
           <td class="px-6 py-4 text-center">
-            {{ item.status }}
+            {{ item.status == 0 ? "Hoạt động" : item.status == 1 ? "Không hoạt động" : "Đầy" }}
           </td>
           <td class="px-6 py-4 text-center">
             <NuxtLink

@@ -12,6 +12,7 @@ import {
   type DatabaseReference,
   startAt,
   equalTo,
+  endAt,
 } from "firebase/database";
 import type Product from "~/interfaces/Product.interface";
 import type Shelves from "~/interfaces/Shelves.interface";
@@ -29,15 +30,18 @@ export const useFirebaseDatabase = () => {
   const create = async (path: string, data: object): Promise<boolean> => {
     let result = false;
     const dataRef: DatabaseReference = ref($firebaseDB, path);
-    await set(dataRef, data)
-      .then(() => {
-        result = true;
-      })
-      .catch((error) => {
-        console.error("Error in create function:", error);
-        result = false;
-      });
-
+    try {
+      await set(dataRef, data)
+        .then(() => {
+          result = true;
+        })
+        .catch((error) => {
+          console.error("Error in create function:", error);
+          result = false;
+        });
+    } catch (e) {
+      console.log(e);
+    }
     return result;
   };
 
@@ -215,6 +219,20 @@ export const useFirebaseDatabase = () => {
     }
   };
 
+  const getListProductWithConditionCreatedAt = async <T>(endAtValue: any): Promise<T | null> => {
+    const dbRef = ref($firebaseDB, 'stockCheck/products/data');
+    let result: T | null = null;
+  
+    // Use query with orderByChild and startAt to filter the data
+    const queryRef = query(dbRef, orderByChild('createdAt'), endAt(endAtValue));
+  
+    await get(queryRef).then((snapshot) => {
+      result = snapshot.val();
+    });
+  
+    return result;
+  };
+
   return {
     create,
     getAndListen,
@@ -226,5 +244,6 @@ export const useFirebaseDatabase = () => {
     deleteData,
     getCategoryById,
     findEmployeeByLoginCode,
+    getListProductWithConditionCreatedAt,
   };
 };

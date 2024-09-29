@@ -1,52 +1,23 @@
 <template>
   <div class="relative shadow rounded overflow-hidden">
     <!-- Header Section -->
-    <div class="flex items-center justify-between flex-wrap space-y-4 py-4 bg-white">
-      <!-- Search Bar -->
-      <div class="relative ml-2">
-        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-          <svg
-            class="w-4 h-4 text-gray-400"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-            />
-          </svg>
-        </div>
-        <input
-          type="text"
-          id="table-search-categories"
-          class="block pb-2 pt-2 ps-10 text-sm border rounded-lg w-80 bg-gray-50 border-gray-600 focus:border-blue-500"
-          autocomplete="off"
-          placeholder="Search categories"
-        />
-      </div>
+    <div class="flex items-center justify-end space-y-4 py-4 bg-white">
       <!-- Add Category Button -->
-      <div>
         <NuxtLink
           to="/category/create"
           class="border item-center p-2 rounded-lg mr-2 bg-emerald-500 text-white hover:bg-emerald-700"
         >
          Tạo mới 
         </NuxtLink>
-      </div>
     </div>
 
     <!-- Categories Table -->
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+        <thead class="text-xs text-gray-700 uppercase bg-white">
           <tr>
             <th scope="col" class="px-6 py-3">Tên Danh Mục</th>
-            <th scope="col" class="px-6 py-3">Mã Sản Phẩm</th>
+            <th scope="col" class="px-6 py-3">Mã Danh Mục</th>
             <th scope="col" class="px-6 py-3">Trạng Thái</th>
             <th scope="col" class="px-6 py-3">Mô tả</th>
             <th scope="col" class="px-6 py-3">Hành Động</th>
@@ -74,7 +45,7 @@
                   'text-red-500': category.status !== 0,
                 }"
               >
-              {{ category.status === 0 ? "Available" : category.status === 1 ? "Not Available" : category.status === 2 ? "Paused" : "Unknown" }}
+              {{ category.status === 0 ? "Hoạt động" : category.status === 1 ? "Không hoạt động" : category.status === 2 ? "Tạm dừng" : "Không xác định" }}
             </span>
             </td>
             <td class="px-6 py-4">{{ category.description }}</td>
