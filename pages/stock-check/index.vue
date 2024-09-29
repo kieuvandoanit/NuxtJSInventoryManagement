@@ -131,18 +131,26 @@ const handlePreviousPage = async () => {
 const appendProgressStatus = async () => {
   await inventoryCheckList.value.forEach(async (campaignStockCheck) => {
     let updatedTime = campaignStockCheck.updatedAt;
-    
+  
     // count list product with condition createdAt <= updatedTime
     let listProducts: any = await getListProductWithConditionCreatedAt(updatedTime);
-
-    const filteredProducts = Object.fromEntries(
+    let filteredProducts = Object.fromEntries(
       Object.entries(listProducts).filter(([key, value]) => value.quantity > 0)
     );
-
+    let listProductWithQuantityZero = Object.fromEntries(
+      Object.entries(listProducts).filter(([key, value]) => value.quantity == 0)
+    );
     let listProductLength = Object.keys(filteredProducts ?? {}).length;
 
     // count list scanned
-    let scannedLength = Object.keys(campaignStockCheck.data ?? {}).length;
+    let campaignStockCheckTemp: any = campaignStockCheck.data;
+    let filteredScanProducts = Object.fromEntries(
+      Object.entries(campaignStockCheckTemp).filter(([key, value]) => {
+        return !Object.keys(listProductWithQuantityZero).includes(value.productId);
+      })
+    );
+
+    let scannedLength = Object.keys(filteredScanProducts ?? {}).length;
     campaignStockCheck.progress = +((scannedLength / listProductLength) * 100).toFixed(0)
   });
 }
